@@ -1,35 +1,27 @@
 :root {
   /* Layout Backgrounds */
-  --bg: #F7F9F7;
+  --bg: #F4F5F7; /* Cool neutral gray, absolutely zero warmth */
   --surface: #FFFFFF;
-  --surface2: #F7F9F7;
+  --surface2: #F9FAFB;
   
   /* Borders and Text */
-  --border: #E1E3E1; /* Subtle light gray */
-  --text: #17201A;
-  --muted: #6B726F;
+  --border: #E5E7EB;
+  --text: #111827; /* Dark charcoal */
+  --muted: #6B7280;
   
   /* Brand Colors */
   --green: #168A45;
   --green-hover: #127238;
-  --green-light: #EAF6EF; /* Provided light tint */
+  --green-light: #EAF6EF;
   
   --orange: #F28C28;
   --orange-hover: #D97C22;
-  --orange-light: rgba(242, 140, 40, 0.1);
   
   /* Semantic priority colors */
-  --critical: #E84824; /* Strong orange/red-orange */
-  --critical-bg: rgba(232, 72, 36, 0.1);
-  
-  --high: #F28C28; /* Accent Orange */
-  --high-bg: rgba(242, 140, 40, 0.1);
-  
-  --medium: #DCA029; /* Distinct gold/yellow */
-  --medium-bg: rgba(220, 160, 41, 0.1);
-  
-  --low: #168A45; /* Green for low/completed */
-  --low-bg: #EAF6EF;
+  --critical: #E84824;
+  --high: #F28C28;
+  --medium: #DCA029;
+  --low: #168A45;
   
   --radius-sm: 6px;
   --radius-md: 8px;
