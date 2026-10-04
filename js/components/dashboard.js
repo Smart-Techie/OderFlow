@@ -8,7 +8,7 @@ export function renderDashboard(container, orders, currentFilter, onFilterSelect
   const html = `
     <div class="summary-grid">
       <div class="summary-card ${currentFilter === 'all' ? 'active' : ''}" data-filter="all">
-        <span class="s-label">Total Orders</span>
+        <span class="s-label">All Orders</span>
         <span class="s-value">${totalCount}</span>
       </div>
       <div class="summary-card ${attentionCount > 0 ? 'attention' : ''} ${currentFilter === 'attention' ? 'active' : ''}" data-filter="attention">

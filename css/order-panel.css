@@ -132,7 +132,7 @@
 }
 
 .primary-action-btn {
-  background-color: var(--green);
+  background-color: var(--orange);
   color: #ffffff;
   font-size: 0.95rem;
   font-weight: 700;
@@ -142,7 +142,7 @@
 }
 
 .primary-action-btn:hover {
-  background-color: var(--green-hover);
+  background-color: var(--orange-hover);
 }
 
 .completed-state {
