@@ -1,0 +1,124 @@
+.order-list-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  position: sticky;
+  top: 0;
+  background-color: var(--surface);
+  z-index: 10;
+}
+
+.order-row {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.order-row:hover {
+  background-color: var(--surface2);
+}
+
+.order-row.selected {
+  background-color: var(--surface2);
+  border-left: 3px solid var(--accent);
+  padding-left: 17px; /* 20 - 3 */
+}
+
+.row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.row-identity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.p-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.p-badge.critical {
+  background-color: var(--critical-bg);
+  color: var(--critical);
+  border: 1px solid rgba(248, 81, 73, 0.3);
+}
+
+.p-badge.high {
+  background-color: var(--high-bg);
+  color: var(--high);
+  border: 1px solid rgba(240, 136, 62, 0.3);
+}
+
+.p-badge.medium {
+  background-color: var(--medium-bg);
+  color: var(--medium);
+  border: 1px solid rgba(210, 153, 34, 0.3);
+}
+
+.p-badge.low {
+  background-color: var(--low-bg);
+  color: var(--low);
+  border: 1px solid rgba(63, 185, 80, 0.3);
+}
+
+.order-id {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.channel-icon {
+  font-size: 0.8rem;
+}
+
+.customer-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.priority-reason {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.row-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.status-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.view-btn {
+  font-size: 0.75rem;
+  color: var(--accent);
+  background: rgba(88, 166, 255, 0.08);
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+}

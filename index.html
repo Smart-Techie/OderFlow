@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrderFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/order-list.css">
+</head>
+<body>
+  
+  <div class="app-container">
+    <!-- Top Summary Bar (Will be added in Slice 3) -->
+    <header class="dashboard-header" id="summary-bar-container"></header>
+    
+    <main class="split-view">
+      <!-- Left Panel: Order List -->
+      <section class="left-panel" id="order-list-container">
+        <!-- Rendered by order-list.js -->
+      </section>
+      
+      <!-- Right Panel: Order Detail (Will be added in Slice 2) -->
+      <section class="right-panel" id="order-detail-container">
+        <div class="empty-state">
+          <p>Select an order to view details</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

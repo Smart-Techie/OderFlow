@@ -9,7 +9,7 @@ Build mode: fast
 
 ## Slices
 
-- [ ] **1. The Prioritized Order List**
+- [x] **1. The Prioritized Order List**
   Becomes usable: The seller can open the app and see the prioritized order queue sorted correctly with plain-English reasons.
   Why now: This proves the "unique kernel" (the automatic priority engine and reason generation) immediately, giving us a foundation to build the rest on.
   PRD ref: `prd.md > The Core Journey` (steps 1-3), `prd.md > Priority Order List`, `prd.md > Prioritization Engine`
