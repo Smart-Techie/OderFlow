@@ -1,0 +1,7 @@
+# Ignore personal learning context
+/devpost/learner-profile.md
+
+# Environment variables
+.env
+.env.*
+!.env.example

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OrderFlow — Product Requirements</title>
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161b22; --surface2: #1c2128; --border: #30363d;
+      --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff; --accent2: #79c0ff;
+      --green: #3fb950; --yellow: #d29922; --orange: #f0883e; --red: #f85149;
+      --purple: #bc8cff; --critical: #f85149; --high: #f0883e; --medium: #d29922;
+      --low: #3fb950; --cut: #6e7681; --r: 8px; --rl: 12px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+    /* Hero */
+    .hero{background:linear-gradient(135deg,#0d1117,#161b22,#1a2332);border-bottom:1px solid var(--border);padding:52px 32px 36px;text-align:center;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(88,166,255,.08),transparent 70%)}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.3);color:var(--green);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+    .hero h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+    .hero p{color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto}
+
+    /* Layout */
+    .wrap{max-width:960px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:start}
+    @media(max-width:700px){.wrap{grid-template-columns:1fr;padding:24px 16px 60px}}
+
+    /* Sidebar nav */
+    .sidebar{position:sticky;top:24px}
+    .nav-title{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+    .nav-item{display:block;padding:6px 10px;font-size:.83rem;color:var(--muted);text-decoration:none;border-radius:var(--r);margin-bottom:2px;border:1px solid transparent;transition:all .15s}
+    .nav-item:hover,.nav-item.active{background:var(--surface2);border-color:var(--border);color:var(--text)}
+    .nav-item.active{border-color:rgba(88,166,255,.3);color:var(--accent)}
+    @media(max-width:700px){.sidebar{display:none}}
+
+    /* Content */
+    .content{min-width:0}
+    .sec{margin-bottom:40px}
+    .sec-title{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    h2{font-size:1.1rem;font-weight:700;margin-bottom:12px}
+    h3{font-size:.92rem;font-weight:700;margin:16px 0 8px;color:var(--accent2)}
+    p{font-size:.9rem;color:var(--text);margin-bottom:10px}
+    ul,ol{padding-left:20px;margin-bottom:10px}
+    li{font-size:.88rem;color:var(--text);margin-bottom:4px}
+
+    /* Journey steps */
+    .journey{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+    .j-step{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;background:var(--surface);border:1px solid var(--border)}
+    .j-step:first-child{border-radius:var(--rl) var(--rl) 0 0}
+    .j-step:last-child{border-radius:0 0 var(--rl) var(--rl)}
+    .j-num{width:26px;height:26px;background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--accent);flex-shrink:0;margin-top:1px}
+    .j-content h4{font-size:.88rem;font-weight:700;margin-bottom:2px}
+    .j-content p{font-size:.83rem;color:var(--muted);margin:0}
+
+    /* Journey flow diagram */
+    .flow-diagram{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:28px 20px;margin-bottom:20px;overflow-x:auto}
+    .flow-row{display:flex;align-items:center;justify-content:center;gap:0;min-width:500px;flex-wrap:nowrap}
+    .f-node{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;text-align:center;font-size:.8rem;font-weight:600;min-width:100px}
+    .f-node.receive{border-color:var(--accent);color:var(--accent)}
+    .f-node.understand{border-color:var(--purple);color:var(--purple)}
+    .f-node.prioritize{border-color:var(--orange);color:var(--orange)}
+    .f-node.act{border-color:var(--green);color:var(--green)}
+    .f-arrow{color:var(--border);padding:0 8px;font-size:1.2rem;flex-shrink:0}
+
+    /* Screen mockup cards */
+    .screen-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:16px}
+    .screen-header{padding:12px 18px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px}
+    .screen-body{padding:18px}
+
+    /* Stat bar preview */
+    .stat-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+    .stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center}
+    .stat-num{font-size:1.6rem;font-weight:800;line-height:1}
+    .stat-num.attention{color:var(--orange)}
+    .stat-num.critical{color:var(--critical)}
+    .stat-num.high{color:var(--high)}
+    .stat-label{font-size:.7rem;color:var(--muted);margin-top:4px}
+
+    /* Order row preview */
+    .order-rows{display:flex;flex-direction:column;gap:2px}
+    .order-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:border-color .15s}
+    .order-row:hover{border-color:rgba(88,166,255,.3)}
+    .p-badge{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+    .p-badge.critical{background:rgba(248,81,73,.15);color:var(--critical);border:1px solid rgba(248,81,73,.3)}
+    .p-badge.high{background:rgba(240,136,62,.15);color:var(--high);border:1px solid rgba(240,136,62,.3)}
+    .p-badge.medium{background:rgba(210,153,34,.15);color:var(--medium);border:1px solid rgba(210,153,34,.3)}
+    .p-badge.low{background:rgba(63,185,80,.15);color:var(--low);border:1px solid rgba(63,185,80,.3)}
+    .order-info{flex:1;min-width:0}
+    .order-name{font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .order-reason{font-size:.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .order-channel{font-size:.8rem;flex-shrink:0}
+    .view-btn{font-size:.72rem;color:var(--accent);background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.2);border-radius:6px;padding:3px 8px;flex-shrink:0}
+
+    /* Order detail preview */
+    .detail-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+    .detail-header{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .detail-body{padding:18px}
+    .detail-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+    .d-field label{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+    .d-field span{font-size:.88rem;color:var(--text)}
+    .reason-box{background:rgba(248,81,73,.06);border:1px solid rgba(248,81,73,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+    .reason-label{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--critical);margin-bottom:3px}
+    .reason-text{font-size:.85rem;color:var(--text)}
+    .action-btn{display:inline-block;background:var(--accent);color:#0d1117;font-weight:700;font-size:.88rem;padding:9px 18px;border-radius:var(--r);border:none;cursor:pointer}
+
+    /* Status workflow */
+    .workflow{display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:4px;margin-bottom:4px}
+    .w-step{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:.78rem;font-weight:600;white-space:nowrap;flex-shrink:0}
+    .w-step.active{border-color:var(--accent);color:var(--accent);background:rgba(88,166,255,.08)}
+    .w-step.done{border-color:var(--green);color:var(--green);opacity:.5}
+    .w-arrow{color:var(--border);padding:0 6px;flex-shrink:0;font-size:1rem}
+
+    /* Priority rules table */
+    .rules-table{width:100%;border-collapse:collapse;font-size:.83rem;margin-bottom:8px}
+    .rules-table th{text-align:left;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border)}
+    .rules-table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .rules-table tr:last-child td{border-bottom:none}
+    .rules-table tr:hover td{background:var(--surface2)}
+
+    /* Demo timeline */
+    .demo-timeline{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+    .demo-beat{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border)}
+    .demo-beat:first-child{border-radius:var(--rl) var(--rl) 0 0}
+    .demo-beat:last-child{border-radius:0 0 var(--rl) var(--rl)}
+    .demo-time{font-size:.75rem;font-weight:700;color:var(--accent);min-width:38px;flex-shrink:0;margin-top:2px;font-variant-numeric:tabular-nums}
+    .demo-content h4{font-size:.85rem;font-weight:700;margin-bottom:2px}
+    .demo-content p{font-size:.8rem;color:var(--muted);margin:0}
+    .demo-content .quote{margin-top:5px;display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.78rem;color:var(--accent2);font-style:italic}
+
+    /* Wow box */
+    .wow-box{background:rgba(188,140,255,.08);border:1px solid rgba(188,140,255,.2);border-radius:var(--r);padding:14px 16px;margin-top:12px;font-size:.88rem;color:var(--purple)}
+    .wow-box strong{display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;opacity:.7;margin-bottom:4px}
+
+    /* Checklist items */
+    .check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.86rem}
+    .check-item:last-child{border-bottom:none}
+    .check-box{width:16px;height:16px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:2px}
+
+    /* Collapsible sections */
+    .collapsible{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:10px}
+    .coll-header{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;background:var(--surface);transition:background .15s;user-select:none}
+    .coll-header:hover{background:var(--surface2)}
+    .coll-label{font-weight:700;font-size:.88rem;flex:1}
+    .coll-chevron{color:var(--muted);font-size:.75rem;transition:transform .2s}
+    .collapsible.open .coll-chevron{transform:rotate(180deg)}
+    .coll-body{display:none;padding:4px 18px 14px;background:var(--surface)}
+    .collapsible.open .coll-body{display:block}
+
+    /* Seed data table */
+    .seed-table{width:100%;border-collapse:collapse;font-size:.8rem}
+    .seed-table th{text-align:left;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:7px 10px;border-bottom:1px solid var(--border)}
+    .seed-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .seed-table tr:last-child td{border-bottom:none}
+
+    footer{text-align:center;padding:28px;border-top:1px solid var(--border);color:var(--muted);font-size:.78rem}
+    footer a{color:var(--accent);text-decoration:none}
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="badge">📋 PRD · Draft</div>
+  <h1>OrderFlow — Product Requirements</h1>
+  <p>What the product does, screen by screen, behavior by behavior — the complete definition before code.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- Sidebar Nav -->
+  <nav class="sidebar">
+    <div class="nav-title">Sections</div>
+    <a class="nav-item active" href="#journey">Core Journey</a>
+    <a class="nav-item" href="#screens">Screens & Layout</a>
+    <a class="nav-item" href="#look">Look & Feel</a>
+    <a class="nav-item" href="#behaviors">Features & Behavior</a>
+    <a class="nav-item" href="#states">States & Boundaries</a>
+    <a class="nav-item" href="#demo">Demo Flow (60s)</a>
+    <a class="nav-item" href="#decisions">Product Decisions</a>
+    <a class="nav-item" href="#building">What We're Building</a>
+    <a class="nav-item" href="#deferred">Deferred</a>
+    <a class="nav-item" href="#nongoals">Non-Goals</a>
+    <a class="nav-item" href="#questions">Open Questions</a>
+  </nav>
+
+  <main class="content">
+
+    <!-- Core Journey -->
+    <section class="sec" id="journey">
+      <p class="sec-title">Core Journey</p>
+
+      <div class="flow-diagram">
+        <div class="flow-row">
+          <div class="f-node receive">📥 Receive<br><span style="font-size:.7rem;opacity:.7">Orders arrive</span></div>
+          <div class="f-arrow">→</div>
+          <div class="f-node understand">🔍 Understand<br><span style="font-size:.7rem;opacity:.7">State & detail</span></div>
+          <div class="f-arrow">→</div>
+          <div class="f-node prioritize">⚡ Prioritize<br><span style="font-size:.7rem;opacity:.7">Auto-scored + reason</span></div>
+          <div class="f-arrow">→</div>
+          <div class="f-node act">✅ Act<br><span style="font-size:.7rem;opacity:.7">One clear action</span></div>
+        </div>
+      </div>
+
+      <div class="journey">
+        <div class="j-step"><div class="j-num">1</div><div class="j-content"><h4>Seller opens OrderFlow</h4><p>Dashboard loads with summary bar and sorted priority order list.</p></div></div>
+        <div class="j-step"><div class="j-num">2</div><div class="j-content"><h4>Dashboard surfaces what matters</h4><p>Critical and High orders rise to the top. Each has a plain-English reason.</p></div></div>
+        <div class="j-step"><div class="j-num">3</div><div class="j-content"><h4>Seller reads the priority reason</h4><p><em style="color:var(--accent2)">"High priority — customer has been waiting 2 hours for confirmation."</em></p></div></div>
+        <div class="j-step"><div class="j-num">4</div><div class="j-content"><h4>Seller opens the order</h4><p>Detail view: what, where, status, why, next action, action button.</p></div></div>
+        <div class="j-step"><div class="j-num">5</div><div class="j-content"><h4>Seller takes the guided action</h4><p>One click: Accept, Mark Processing, Mark Ready, Mark Shipped, Complete, or Contact.</p></div></div>
+        <div class="j-step"><div class="j-num">6</div><div class="j-content"><h4>Status updates, next order surfaces</h4><p>Dashboard and priority recalculate immediately. Repeat until queue is clear.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Screens -->
+    <section class="sec" id="screens">
+      <p class="sec-title">Screens & Layout</p>
+
+      <h3>Dashboard</h3>
+      <div class="screen-card">
+        <div class="screen-header">📋 Dashboard — Summary Bar Preview</div>
+        <div class="screen-body">
+          <div class="stat-bar">
+            <div class="stat-card"><div class="stat-num">7</div><div class="stat-label">Total Orders</div></div>
+            <div class="stat-card"><div class="stat-num attention">4</div><div class="stat-label">Need Attention</div></div>
+            <div class="stat-card"><div class="stat-num critical">1</div><div class="stat-label">Critical</div></div>
+            <div class="stat-card"><div class="stat-num high">3</div><div class="stat-label">High Priority</div></div>
+          </div>
+          <div class="order-rows">
+            <div class="order-row"><span class="p-badge critical">Critical</span><div class="order-info"><div class="order-name">#1042 — Chiamaka Osei</div><div class="order-reason">Critical — approaching fulfillment deadline and not yet accepted.</div></div><span class="order-channel">💬</span><span class="view-btn">View →</span></div>
+            <div class="order-row"><span class="p-badge high">High</span><div class="order-info"><div class="order-name">#1039 — Emeka Okafor</div><div class="order-reason">High priority — new order has been waiting over 1 hour for acceptance.</div></div><span class="order-channel">🛒</span><span class="view-btn">View →</span></div>
+            <div class="order-row"><span class="p-badge high">High</span><div class="order-info"><div class="order-name">#1035 — Adaeze Nwosu</div><div class="order-reason">High priority — order has been stalled in Processing for 4 hours.</div></div><span class="order-channel">🛒</span><span class="view-btn">View →</span></div>
+            <div class="order-row"><span class="p-badge medium">Medium</span><div class="order-info"><div class="order-name">#1028 — Ngozi Eze</div><div class="order-reason">Order is in progress.</div></div><span class="order-channel">💬</span><span class="view-btn">View →</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Order Detail View</h3>
+      <div class="screen-card">
+        <div class="screen-header">📦 Order Detail — #1042</div>
+        <div class="screen-body">
+          <div class="detail-card">
+            <div class="detail-header"><span class="p-badge critical">Critical</span><strong style="font-size:.92rem">Order #1042</strong><span style="margin-left:auto;font-size:.78rem;color:var(--muted)">💬 WhatsApp · 2 items · ₦18,500</span></div>
+            <div class="detail-body">
+              <div class="detail-fields">
+                <div class="d-field"><label>① What it is</label><span>2x Ankara Print Dress (M, L)</span></div>
+                <div class="d-field"><label>② Where it came from</label><span>💬 WhatsApp</span></div>
+                <div class="d-field"><label>③ Current Status</label><span>New — awaiting acceptance</span></div>
+                <div class="d-field"><label>Customer</label><span>Chiamaka Osei · +234 803 xxx xxxx</span></div>
+              </div>
+              <div class="reason-box">
+                <div class="reason-label">④ Why it's important</div>
+                <div class="reason-text">Critical — WhatsApp order is approaching its fulfillment deadline and has not been accepted yet.</div>
+              </div>
+              <p style="font-size:.78rem;color:var(--muted);margin-bottom:8px">⑤ Recommended: Accept this order immediately to confirm with the customer.</p>
+              <button class="action-btn">⑥ Accept Order →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Look and Feel -->
+    <section class="sec" id="look">
+      <p class="sec-title">Look & Feel</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:16px">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px">
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Style</div>
+          <div style="font-size:.85rem">Operational. Clean. Fast.<br>Linear / Things 3 energy — not a cluttered e-commerce backend.</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px">
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Colors</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span style="width:24px;height:24px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:inline-block"></span>
+            <span style="width:24px;height:24px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:inline-block"></span>
+            <span style="width:24px;height:24px;border-radius:50%;background:var(--accent);display:inline-block"></span>
+            <span style="width:24px;height:24px;border-radius:50%;background:var(--critical);display:inline-block"></span>
+            <span style="width:24px;height:24px;border-radius:50%;background:var(--high);display:inline-block"></span>
+            <span style="width:24px;height:24px;border-radius:50%;background:var(--medium);display:inline-block"></span>
+            <span style="width:24px;height:24px;border-radius:50%;background:var(--low);display:inline-block"></span>
+          </div>
+          <div style="font-size:.76rem;color:var(--muted);margin-top:6px">Dark bg · Priority = semantic color</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px">
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Typography</div>
+          <div style="font-size:.85rem">Inter or system sans-serif. Strong hierarchy. Large numbers on stats. Readable rows. Prominent buttons.</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px">
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Tone</div>
+          <div style="font-size:.85rem">Practical and direct. Labels say exactly what they mean.<br><em style="color:var(--muted)">"Accept Order." Not "Submit."</em></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="sec" id="behaviors">
+      <p class="sec-title">Features & Behavior</p>
+
+      <!-- Priority Rules -->
+      <h3>Prioritization Engine</h3>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:16px">
+        <div style="padding:12px 18px 0"><p style="font-size:.83rem;color:var(--muted);margin-bottom:12px">Rule-based, deterministic. Built-in defaults. First match wins. Recalculates on every status change.</p></div>
+        <table class="rules-table">
+          <thead><tr><th>Condition</th><th>Priority</th><th>Example Reason</th></tr></thead>
+          <tbody>
+            <tr><td>Fulfillment window within 2 hrs, not yet shipped</td><td><span class="p-badge critical">Critical</span></td><td style="color:var(--muted);font-style:italic">"Critical — approaching fulfillment deadline."</td></tr>
+            <tr><td>New order waiting &gt; 60 min</td><td><span class="p-badge high">High</span></td><td style="color:var(--muted);font-style:italic">"New order waiting 1 hour for acceptance."</td></tr>
+            <tr><td>WhatsApp order New &gt; 30 min</td><td><span class="p-badge high">High</span></td><td style="color:var(--muted);font-style:italic">"WhatsApp customer waiting for response."</td></tr>
+            <tr><td>Issue flag (missing info / payment)</td><td><span class="p-badge high">High</span></td><td style="color:var(--muted);font-style:italic">"Missing payment confirmation."</td></tr>
+            <tr><td>Same non-terminal status &gt; 3 hrs</td><td><span class="p-badge high">High</span></td><td style="color:var(--muted);font-style:italic">"Stalled in Processing for 4 hours."</td></tr>
+            <tr><td>New/Accepted, placed within 60 min</td><td><span class="p-badge high">High</span></td><td style="color:var(--muted);font-style:italic">"New order — action required."</td></tr>
+            <tr><td>Active, no flags, on track</td><td><span class="p-badge medium">Medium</span></td><td style="color:var(--muted);font-style:italic">"Order is in progress."</td></tr>
+            <tr><td>Completed</td><td><span class="p-badge low">Low</span></td><td style="color:var(--muted);font-style:italic">"Order completed."</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Status Workflow -->
+      <h3>Status Workflow</h3>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px;margin-bottom:16px">
+        <div class="workflow">
+          <div class="w-step active">New</div><div class="w-arrow">→</div>
+          <div class="w-step">Accepted</div><div class="w-arrow">→</div>
+          <div class="w-step">Processing</div><div class="w-arrow">→</div>
+          <div class="w-step">Ready for Delivery</div><div class="w-arrow">→</div>
+          <div class="w-step">Shipped</div><div class="w-arrow">→</div>
+          <div class="w-step done">Completed</div>
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:12px">Linear progression. One primary action button per step. Status updates immediately on click. No branching in POC.</p>
+      </div>
+
+      <!-- Simulated Data -->
+      <h3>Simulated Order Seed Data</h3>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:16px">
+        <table class="seed-table">
+          <thead><tr><th>Order</th><th>Channel</th><th>Status</th><th>Expected Priority</th></tr></thead>
+          <tbody>
+            <tr><td>#1042 — Chiamaka Osei</td><td>💬 WhatsApp</td><td>New</td><td><span class="p-badge critical">Critical</span></td></tr>
+            <tr><td>#1039 — Emeka Okafor</td><td>🛒 E-Commerce</td><td>New</td><td><span class="p-badge high">High</span></td></tr>
+            <tr><td>#1035 — Adaeze Nwosu</td><td>🛒 E-Commerce</td><td>Processing</td><td><span class="p-badge high">High (stalled)</span></td></tr>
+            <tr><td>#1031 — Femi Adeyemi</td><td>🛒 E-Commerce</td><td>Accepted</td><td><span class="p-badge high">High (flag)</span></td></tr>
+            <tr><td>#1028 — Ngozi Eze</td><td>💬 WhatsApp</td><td>Processing</td><td><span class="p-badge medium">Medium</span></td></tr>
+            <tr><td>#1021 — Tunde Balogun</td><td>🛒 E-Commerce</td><td>Shipped</td><td><span class="p-badge medium">Medium</span></td></tr>
+            <tr><td>#1018 — Yetunde Afolabi</td><td>🛒 E-Commerce</td><td>Completed</td><td><span class="p-badge low">Low</span></td></tr>
+          </tbody>
+        </table>
+        <div style="padding:12px 18px;border-top:1px solid var(--border);background:var(--surface2);font-size:.8rem;color:var(--muted)">Plus a "Simulate New Order" trigger that adds a fresh WhatsApp order in New status during the demo.</div>
+      </div>
+    </section>
+
+    <!-- States -->
+    <section class="sec" id="states">
+      <p class="sec-title">States & Boundaries</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px"><span style="font-size:.78rem;font-weight:700;color:var(--accent2)">Normal</span><span style="font-size:.83rem;color:var(--muted);margin-left:8px">Orders present, sorted, actionable. Dashboard counts reflect reality.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px"><span style="font-size:.78rem;font-weight:700;color:var(--muted)">Empty</span><span style="font-size:.83rem;color:var(--muted);margin-left:8px">"No orders yet. Use 'Simulate New Order' to see OrderFlow in action." All counts zero.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px"><span style="font-size:.78rem;font-weight:700;color:var(--green)">All Complete</span><span style="font-size:.83rem;color:var(--muted);margin-left:8px">"All orders are up to date — nothing needs attention right now." Need Attention = 0.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px"><span style="font-size:.78rem;font-weight:700;color:var(--orange)">Flagged Order</span><span style="font-size:.83rem;color:var(--muted);margin-left:8px">⚠️ icon on row. Detail view shows specific issue in Priority Reason box.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px"><span style="font-size:.78rem;font-weight:700;color:var(--accent)">Just Updated</span><span style="font-size:.83rem;color:var(--muted);margin-left:8px">Status badge and priority both update immediately. No loading delay. Next action is clear.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px"><span style="font-size:.78rem;font-weight:700;color:var(--low)">Completed Order</span><span style="font-size:.83rem;color:var(--muted);margin-left:8px">Stays in list, sorted to bottom. No action button — shows completion indicator instead.</span></div>
+      </div>
+    </section>
+
+    <!-- Demo Flow -->
+    <section class="sec" id="demo">
+      <p class="sec-title">Happy-Path Demo Flow (60 Seconds)</p>
+      <div class="demo-timeline">
+        <div class="demo-beat"><div class="demo-time">0:00</div><div class="demo-content"><h4>Open OrderFlow</h4><p>Dashboard loads. Summary bar: 7 Total, 4 Need Attention, 1 Critical, 3 High.</p></div></div>
+        <div class="demo-beat"><div class="demo-time">0:05</div><div class="demo-content"><h4>Point out the sorted list</h4><p>#1042 is at the top with a red Critical badge.</p><span class="quote">"Critical — order is approaching its fulfillment deadline."</span></div></div>
+        <div class="demo-beat"><div class="demo-time">0:12</div><div class="demo-content"><h4>Open the Critical order</h4><p>Detail view: 2x Ankara Print Dress, WhatsApp, status New. Priority Reason box prominent.</p><span class="quote">"Critical — WhatsApp order approaching fulfillment deadline, not yet accepted."</span></div></div>
+        <div class="demo-beat"><div class="demo-time">0:20</div><div class="demo-content"><h4>Click "Accept Order"</h4><p>Status updates instantly to Accepted. Dashboard: 1 Critical → 0 Critical.</p></div></div>
+        <div class="demo-beat"><div class="demo-time">0:25</div><div class="demo-content"><h4>Back to dashboard</h4><p>#1039 has surfaced to top.</p><span class="quote">"High priority — new order has been waiting over 1 hour for acceptance."</span></div></div>
+        <div class="demo-beat"><div class="demo-time">0:32</div><div class="demo-content"><h4>Simulate a new order arriving</h4><p>Click "Simulate New Order." New WhatsApp order appears at top with High priority. Summary bar updates.</p></div></div>
+        <div class="demo-beat"><div class="demo-time">0:40</div><div class="demo-content"><h4>Name the "wow" moment</h4><p style="color:var(--text);font-style:italic">"I didn't scan through all those orders. OrderFlow told me which was critical, explained why, and gave me the action."</p></div></div>
+        <div class="demo-beat"><div class="demo-time">0:50</div><div class="demo-content"><h4>Show a stalled order</h4><p>Open #1035. Priority Reason: <em>"High priority — stalled in Processing for 4 hours."</em> Show "Mark as Ready" button.</p></div></div>
+        <div class="demo-beat"><div class="demo-time">0:58</div><div class="demo-content"><h4>Close on dashboard</h4><p>Summary bar shows improving queue. End demo.</p></div></div>
+      </div>
+      <div class="wow-box">
+        <strong>✨ The Moment</strong>
+        "I didn't have to scan through all these orders myself. OrderFlow told me exactly what needed my attention and what to do next."
+      </div>
+    </section>
+
+    <!-- Product Decisions -->
+    <section class="sec" id="decisions">
+      <p class="sec-title">Product Decisions</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;font-size:.85rem"><strong>Single seller, no login</strong> <span style="color:var(--muted)">— Keeps build focused on core loop. Auth is deferred.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;font-size:.85rem"><strong>Simulated channels</strong> <span style="color:var(--muted)">— No external API dependencies for POC. Real integrations slot in at the same data entry point.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;font-size:.85rem"><strong>Rule-based prioritization</strong> <span style="color:var(--muted)">— Deterministic, explainable, testable. ML is deferred until real data exists.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;font-size:.85rem"><strong>No in-app messaging</strong> <span style="color:var(--muted)">— Contact customer links out. Real-time chat is explicitly out of scope.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;font-size:.85rem"><strong>Linear status progression</strong> <span style="color:var(--muted)">— No cancel, return, or refund paths in POC. Forward-only keeps state machine simple.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;font-size:.85rem"><strong>Session-only persistence</strong> <span style="color:var(--muted)">— State held in memory; may reset on refresh. Acceptable for demo.</span></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;font-size:.85rem"><strong>Nigerian/African business context</strong> <span style="color:var(--muted)">— Seed data uses realistic names and products to ground the demo in a real use case.</span></div>
+      </div>
+    </section>
+
+    <!-- What We're Building -->
+    <section class="sec" id="building">
+      <p class="sec-title">What We're Building</p>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px">
+        <div class="check-item"><div class="check-box"></div><span>Dashboard with four summary stat cards</span></div>
+        <div class="check-item"><div class="check-box"></div><span>Priority order list, sorted and color-coded, with plain-English reason on every row</span></div>
+        <div class="check-item"><div class="check-box"></div><span>Order detail view with all six required elements always visible</span></div>
+        <div class="check-item"><div class="check-box"></div><span>Status workflow: New → Accepted → Processing → Ready → Shipped → Completed</span></div>
+        <div class="check-item"><div class="check-box"></div><span>Primary action button that advances one step and updates immediately</span></div>
+        <div class="check-item"><div class="check-box"></div><span>Prioritization engine with 8-rule table, recalculating on every status change</span></div>
+        <div class="check-item"><div class="check-box"></div><span>Simulated order seed data (7 orders, both channels, varied statuses and ages)</span></div>
+        <div class="check-item"><div class="check-box"></div><span>"Simulate New Order" trigger for the demo</span></div>
+        <div class="check-item"><div class="check-box"></div><span>Contact customer: tel: / mailto: / wa.me/ links</span></div>
+        <div class="check-item"><div class="check-box"></div><span>Priority reason always visible on both list row and detail view</span></div>
+      </div>
+    </section>
+
+    <!-- Deferred -->
+    <section class="sec" id="deferred">
+      <p class="sec-title">Deferred From the POC</p>
+      <div class="collapsible" id="def1">
+        <div class="coll-header" onclick="toggle('def1')"><span class="coll-label" style="color:var(--accent)">Real WhatsApp Business API</span><span class="coll-chevron">▼</span></div>
+        <div class="coll-body"><p style="color:var(--muted);font-size:.85rem">The channel data structure is designed so this slots in. The API integration itself requires an approved WhatsApp Business account and is out of scope for the POC.</p></div>
+      </div>
+      <div class="collapsible" id="def2">
+        <div class="coll-header" onclick="toggle('def2')"><span class="coll-label" style="color:var(--accent)">Real E-Commerce Platform Integration</span><span class="coll-chevron">▼</span></div>
+        <div class="coll-body"><p style="color:var(--muted);font-size:.85rem">Shopify, WooCommerce, or similar. Simulated for now at the same data entry point.</p></div>
+      </div>
+      <div class="collapsible" id="def3">
+        <div class="coll-header" onclick="toggle('def3')"><span class="coll-label" style="color:var(--accent)">Persistent Data Storage</span><span class="coll-chevron">▼</span></div>
+        <div class="coll-body"><p style="color:var(--muted);font-size:.85rem">Orders reset on refresh. A real database (localStorage or backend) is a spec and build decision deferred past the demo.</p></div>
+      </div>
+      <div class="collapsible" id="def4">
+        <div class="coll-header" onclick="toggle('def4')"><span class="coll-label" style="color:var(--accent)">Authentication & Multi-Seller Accounts</span><span class="coll-chevron">▼</span></div>
+        <div class="coll-body"><p style="color:var(--muted);font-size:.85rem">No login, no user management. Single seller for the demo.</p></div>
+      </div>
+      <div class="collapsible" id="def5">
+        <div class="coll-header" onclick="toggle('def5')"><span class="coll-label" style="color:var(--accent)">Configurable Priority Rules, Push Notifications, Analytics</span><span class="coll-chevron">▼</span></div>
+        <div class="coll-body"><p style="color:var(--muted);font-size:.85rem">All deferred. Built-in defaults serve the demo. No settings UI, no alert system, no charts.</p></div>
+      </div>
+    </section>
+
+    <!-- Non-Goals -->
+    <section class="sec" id="nongoals">
+      <p class="sec-title">Non-Goals</p>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="background:var(--surface);border:1px solid rgba(248,81,73,.2);border-radius:var(--r);padding:12px 16px;font-size:.85rem"><span style="color:var(--red)">🚫</span> <strong>Not a payment processor.</strong> <span style="color:var(--muted)">Payment status is a data field only.</span></div>
+        <div style="background:var(--surface);border:1px solid rgba(248,81,73,.2);border-radius:var(--r);padding:12px 16px;font-size:.85rem"><span style="color:var(--red)">🚫</span> <strong>Not a mobile app.</strong> <span style="color:var(--muted)">Web browser only. Responsive layout is fine.</span></div>
+        <div style="background:var(--surface);border:1px solid rgba(248,81,73,.2);border-radius:var(--r);padding:12px 16px;font-size:.85rem"><span style="color:var(--red)">🚫</span> <strong>Not an inventory system.</strong> <span style="color:var(--muted)">Stock flags may appear; no stock levels or SKU management.</span></div>
+        <div style="background:var(--surface);border:1px solid rgba(248,81,73,.2);border-radius:var(--r);padding:12px 16px;font-size:.85rem"><span style="color:var(--red)">🚫</span> <strong>Not a CRM.</strong> <span style="color:var(--muted)">Customer details are order-scoped. No history or contact database.</span></div>
+        <div style="background:var(--surface);border:1px solid rgba(248,81,73,.2);border-radius:var(--r);padding:12px 16px;font-size:.85rem"><span style="color:var(--red)">🚫</span> <strong>Not a reporting tool.</strong> <span style="color:var(--muted)">No analytics, charts, or performance dashboard.</span></div>
+      </div>
+    </section>
+
+    <!-- Open Questions -->
+    <section class="sec" id="questions">
+      <p class="sec-title">Open Questions</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:var(--surface);border:1px solid rgba(210,153,34,.2);border-radius:var(--r);padding:13px 16px">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--medium);margin-bottom:4px">Resolve in 4-spec</div>
+          <div style="font-size:.85rem"><strong>Order detail layout:</strong> Full-page navigation or right-side panel? <span style="color:var(--muted)">Panel recommended for demo (list + detail visible simultaneously).</span></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid rgba(210,153,34,.2);border-radius:var(--r);padding:13px 16px">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--medium);margin-bottom:4px">Resolve in 4-spec</div>
+          <div style="font-size:.85rem"><strong>Priority recalculation timing:</strong> Age calculated from seed timestamps (not live clock) — acceptable for demo.</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Build detail</div>
+          <div style="font-size:.85rem"><strong>"Simulate New Order" data:</strong> Pre-populated with realistic fields. Exact values are a build decision.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  OrderFlow · PRD (Draft) · Devpost Learn Build With AI: Basics · Canonical: <a href="prd.md">prd.md</a>
+</footer>
+
+<script>
+  function toggle(id){document.getElementById(id).classList.toggle('open')}
+  // Highlight active nav on scroll
+  const sections=document.querySelectorAll('section[id]');
+  const navLinks=document.querySelectorAll('.nav-item');
+  window.addEventListener('scroll',()=>{
+    let cur='';
+    sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id});
+    navLinks.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+cur)});
+  });
+</script>
+</body>
+</html>

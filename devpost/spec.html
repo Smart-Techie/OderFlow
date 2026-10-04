@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OrderFlow — Technical Spec</title>
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161b22; --surface2: #1c2128; --border: #30363d;
+      --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff; --accent2: #79c0ff;
+      --green: #3fb950; --yellow: #d29922; --orange: #f0883e; --red: #f85149;
+      --purple: #bc8cff; --critical: #f85149; --high: #f0883e; --medium: #d29922;
+      --low: #3fb950; --cut: #6e7681; --r: 8px; --rl: 12px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+    /* Hero */
+    .hero{background:linear-gradient(135deg,#0d1117,#161b22,#1a2332);border-bottom:1px solid var(--border);padding:52px 32px 36px;text-align:center;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(88,166,255,.08),transparent 70%)}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);color:var(--accent);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+    .hero h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+    .hero p{color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto}
+
+    /* Layout */
+    .wrap{max-width:960px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:start}
+    @media(max-width:700px){.wrap{grid-template-columns:1fr;padding:24px 16px 60px}}
+
+    /* Sidebar nav */
+    .sidebar{position:sticky;top:24px}
+    .nav-title{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+    .nav-item{display:block;padding:6px 10px;font-size:.83rem;color:var(--muted);text-decoration:none;border-radius:var(--r);margin-bottom:2px;border:1px solid transparent;transition:all .15s}
+    .nav-item:hover,.nav-item.active{background:var(--surface2);border-color:var(--border);color:var(--text)}
+    .nav-item.active{border-color:rgba(88,166,255,.3);color:var(--accent)}
+    @media(max-width:700px){.sidebar{display:none}}
+
+    /* Content */
+    .content{min-width:0}
+    .sec{margin-bottom:40px}
+    .sec-title{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    h2{font-size:1.1rem;font-weight:700;margin-bottom:12px}
+    h3{font-size:.92rem;font-weight:700;margin:16px 0 8px;color:var(--accent2)}
+    p{font-size:.9rem;color:var(--text);margin-bottom:10px}
+    ul,ol{padding-left:20px;margin-bottom:10px}
+    li{font-size:.88rem;color:var(--text);margin-bottom:4px}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:.85em;background:rgba(255,255,255,.1);padding:2px 4px;border-radius:4px}
+    pre{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;overflow-x:auto;font-size:.85rem;margin-bottom:16px;line-height:1.45}
+    pre code{background:none;padding:0}
+
+    /* Architecture Diagram */
+    .arch-diagram{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:30px 20px;margin-bottom:24px;overflow-x:auto}
+    .arch-grid{display:grid;grid-template-columns:180px 40px 180px 40px 220px;align-items:center;min-width:700px;gap:0;margin:0 auto}
+    .a-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;position:relative}
+    .a-title{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:4px}
+    .a-sub{font-size:.7rem;color:var(--muted)}
+    .a-arrow{color:var(--muted);text-align:center;font-size:1.2rem}
+    .a-box.ui{grid-column:1 / -1;display:flex;gap:16px;background:none;border:none;padding:20px 0 0;margin-top:20px;border-top:1px dashed var(--border)}
+    .ui-comp{flex:1;background:rgba(88,166,255,.05);border:1px solid rgba(88,166,255,.2);border-radius:var(--r);padding:12px;text-align:center}
+
+    /* Stack grid */
+    .stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+    .stack-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+    .s-cat{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+    .s-choice{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:6px}
+    .s-why{font-size:.8rem;color:var(--muted)}
+    @media(max-width:500px){.stack-grid{grid-template-columns:1fr}}
+
+    /* Data Model */
+    .model-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:16px}
+    .model-header{padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:8px}
+    .model-body{padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;color:var(--accent2)}
+    .m-key{color:var(--accent)}
+    .m-type{color:var(--muted)}
+    .m-comment{color:#6e7681;font-style:italic}
+
+    /* Collapsible */
+    .collapsible{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:8px}
+    .coll-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;background:var(--surface);transition:background .15s;user-select:none}
+    .coll-header:hover{background:var(--surface2)}
+    .coll-label{font-weight:600;font-size:.85rem;flex:1}
+    .coll-chevron{color:var(--muted);font-size:.75rem;transition:transform .2s}
+    .collapsible.open .coll-chevron{transform:rotate(180deg)}
+    .coll-body{display:none;padding:0 16px 16px;background:var(--surface);font-size:.85rem;color:var(--muted)}
+    .collapsible.open .coll-body{display:block}
+
+    /* Insight Box */
+    .insight-box{background:rgba(188,140,255,.08);border:1px solid rgba(188,140,255,.2);border-radius:var(--r);padding:16px;margin-top:16px;font-size:.88rem;color:var(--purple)}
+    .insight-box strong{display:block;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin-bottom:6px}
+
+    footer{text-align:center;padding:28px;border-top:1px solid var(--border);color:var(--muted);font-size:.78rem}
+    footer a{color:var(--accent);text-decoration:none}
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="badge">⚙️ Spec · Draft</div>
+  <h1>OrderFlow — Technical Spec</h1>
+  <p>The blueprint for how we'll build the PRD: stack, data flow, architecture, and file structure.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- Sidebar Nav -->
+  <nav class="sidebar">
+    <div class="nav-title">Blueprint</div>
+    <a class="nav-item active" href="#plain-language">How It Works</a>
+    <a class="nav-item" href="#journey">Data Journey</a>
+    <a class="nav-item" href="#stack">Stack & Tools</a>
+    <a class="nav-item" href="#components">Components</a>
+    <a class="nav-item" href="#model">Data Model</a>
+    <a class="nav-item" href="#files">File Structure</a>
+    <a class="nav-item" href="#decisions">Decisions & Insights</a>
+  </nav>
+
+  <main class="content">
+
+    <!-- Plain Language -->
+    <section class="sec" id="plain-language">
+      <p class="sec-title">How This Works, In Plain Language</p>
+      <p>OrderFlow runs entirely in the browser — no server, no database. It's essentially one HTML file that knows how to read a list of orders, think about them, and show the seller what to do.</p>
+      <ul style="font-size:.9rem;color:var(--muted);line-height:1.7">
+        <li><strong style="color:var(--text)">Seed Data Module:</strong> A frozen-in-time list of pre-written, realistic orders. This is the exact spot where a real API integration would plug in later.</li>
+        <li><strong style="color:var(--text)">Priority Engine:</strong> The intelligence. It takes an order, applies 8 rules, and outputs a priority level and a plain-English reason. It doesn't guess; it's predictable.</li>
+        <li><strong style="color:var(--text)">App State:</strong> The short-term memory. It holds the current list of prioritized orders and tracks which one is selected. State resets on refresh.</li>
+        <li><strong style="color:var(--text)">UI:</strong> Three visual zones (Summary Bar, List Panel, Detail Panel) that simply render whatever is in the App State.</li>
+      </ul>
+    </section>
+
+    <!-- Architecture & Journey -->
+    <section class="sec" id="journey">
+      <p class="sec-title">The Core Journey Through the System</p>
+      
+      <div class="arch-diagram">
+        <div class="arch-grid">
+          <div class="a-box" style="border-color:var(--green)">
+            <div class="a-title">Seed Data</div>
+            <div class="a-sub">orders.js</div>
+          </div>
+          <div class="a-arrow">→</div>
+          <div class="a-box" style="border-color:var(--purple)">
+            <div class="a-title">Priority Engine</div>
+            <div class="a-sub">priority.js (Rules)</div>
+          </div>
+          <div class="a-arrow">→</div>
+          <div class="a-box" style="border-color:var(--accent)">
+            <div class="a-title">App State</div>
+            <div class="a-sub">app.js (Memory)</div>
+          </div>
+          
+          <div class="a-box ui">
+            <div class="ui-comp">
+              <div class="a-title">Summary Bar</div>
+              <div class="a-sub">dashboard.js</div>
+            </div>
+            <div class="ui-comp">
+              <div class="a-title">Order List (Left)</div>
+              <div class="a-sub">order-list.js</div>
+            </div>
+            <div class="ui-comp">
+              <div class="a-title">Detail Panel (Right)</div>
+              <div class="a-sub">order-panel.js</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:16px;font-size:.75rem;color:var(--muted)">↑ Click action button → State updates → UI re-renders ↑</div>
+      </div>
+    </section>
+
+    <!-- Stack -->
+    <section class="sec" id="stack">
+      <p class="sec-title">Stack & Runtime</p>
+      <div class="stack-grid">
+        <div class="stack-card">
+          <div class="s-cat">Language</div>
+          <div class="s-choice">HTML5 + CSS3 + Vanilla JS</div>
+          <div class="s-why">Matches learner skills. No framework to learn. Opens directly in browser.</div>
+        </div>
+        <div class="stack-card">
+          <div class="s-cat">Modules</div>
+          <div class="s-choice">Native ES Modules</div>
+          <div class="s-why">Logical file separation without a build step or bundler.</div>
+        </div>
+        <div class="stack-card">
+          <div class="s-cat">State & Data</div>
+          <div class="s-choice">In-Memory Object</div>
+          <div class="s-why">Simple, readable. No database or localStorage needed for POC.</div>
+        </div>
+        <div class="stack-card">
+          <div class="s-cat">External Services</div>
+          <div class="s-choice">None</div>
+          <div class="s-why">Zero API keys, zero accounts. Works fully offline.</div>
+        </div>
+      </div>
+      <div style="background:rgba(88,166,255,.05);border:1px solid rgba(88,166,255,.2);border-radius:var(--r);padding:12px 16px;font-size:.85rem">
+        <strong style="color:var(--accent)">Where it runs:</strong> The browser. Double-click <code>index.html</code> (or use a local server if file:// restrictions block ES modules). No terminal setup needed. Deployment is optional.
+      </div>
+    </section>
+
+    <!-- Components -->
+    <section class="sec" id="components">
+      <p class="sec-title">Components</p>
+      
+      <div class="collapsible">
+        <div class="coll-header" onclick="toggle(this)"><span class="coll-label">js/app.js (App State)</span><span class="coll-chevron">▼</span></div>
+        <div class="coll-body">The central coordinator. Holds the order list and selected order ID. Exports functions to initialize, select an order, advance status, and simulate a new order. Wires the engine to the UI components.</div>
+      </div>
+      <div class="collapsible">
+        <div class="coll-header" onclick="toggle(this)"><span class="coll-label">js/engine/priority.js</span><span class="coll-chevron">▼</span></div>
+        <div class="coll-body">A pure function. Takes an order and a reference time, applies the 8 rules (first match wins), and returns the priority level and plain-English reason. Knows nothing about the UI.</div>
+      </div>
+      <div class="collapsible">
+        <div class="coll-header" onclick="toggle(this)"><span class="coll-label">js/data/orders.js</span><span class="coll-chevron">▼</span></div>
+        <div class="coll-body">Exports the array of 7 pre-written seed orders and a SEED_REFERENCE_TIME constant. This is the exact seam where a real API integration connects later.</div>
+      </div>
+      <div class="collapsible">
+        <div class="coll-header" onclick="toggle(this)"><span class="coll-label">UI Components (dashboard, list, panel)</span><span class="coll-chevron">▼</span></div>
+        <div class="coll-body">Dumb rendering modules. They receive state and render HTML. The panel module also handles the dynamic action button labels based on the status transition table.</div>
+      </div>
+    </section>
+
+    <!-- Data Model -->
+    <section class="sec" id="model">
+      <p class="sec-title">Data Model</p>
+      <div class="model-box">
+        <div class="model-header">Order Object Shape</div>
+        <div class="model-body">
+{
+  <span class="m-key">id</span>: <span class="m-type">string</span>, <span class="m-comment">// "#1042"</span>
+  <span class="m-key">customer</span>: {
+    <span class="m-key">name</span>: <span class="m-type">string</span>,
+    <span class="m-key">phone</span>: <span class="m-type">string</span>,
+    <span class="m-key">email</span>: <span class="m-type">string | null</span>,
+    <span class="m-key">whatsappNumber</span>: <span class="m-type">string | null</span>
+  },
+  <span class="m-key">items</span>: [ { name, qty, variant } ],
+  <span class="m-key">total</span>: <span class="m-type">number</span>,
+  <span class="m-key">channel</span>: <span class="m-type">"ecommerce" | "whatsapp"</span>,
+  <span class="m-key">status</span>: <span class="m-type">"new" | "accepted" | "processing" | ...</span>,
+  <span class="m-key">placedAt</span>: <span class="m-type">Date</span>, <span class="m-comment">// seed timestamp</span>
+  <span class="m-key">expectedBy</span>: <span class="m-type">Date | null</span>,
+  <span class="m-key">flags</span>: <span class="m-type">string[]</span>, <span class="m-comment">// ["missing_payment"]</span>
+  
+  <span class="m-comment">// Computed by priority.js (not in seed):</span>
+  <span class="m-key">priority</span>: <span class="m-type">"critical" | "high" | "medium" | "low"</span>,
+  <span class="m-key">priorityReason</span>: <span class="m-type">string</span>
+}
+        </div>
+      </div>
+    </section>
+
+    <!-- File Structure -->
+    <section class="sec" id="files">
+      <p class="sec-title">File Structure</p>
+<pre><code>OrderFlow/
+├── index.html                  <span class="m-comment"># Single-page app shell</span>
+├── css/
+│   ├── base.css                <span class="m-comment"># Resets, vars, typography</span>
+│   ├── layout.css              <span class="m-comment"># Grid split, responsive</span>
+│   ├── order-list.css          <span class="m-comment"># Left panel styling</span>
+│   └── order-panel.css         <span class="m-comment"># Right panel styling</span>
+├── js/
+│   ├── app.js                  <span class="m-comment"># State & wiring</span>
+│   ├── data/
+│   │   └── orders.js           <span class="m-comment"># Seed data</span>
+│   ├── engine/
+│   │   └── priority.js         <span class="m-comment"># Pure rule logic</span>
+│   └── components/
+│       ├── dashboard.js
+│       ├── order-list.js
+│       └── order-panel.js
+└── devpost/                    <span class="m-comment"># Planning artifacts</span></code></pre>
+    </section>
+
+    <!-- Decisions -->
+    <section class="sec" id="decisions">
+      <p class="sec-title">Decisions & Insights</p>
+      
+      <p><strong>Right-side detail panel:</strong> Chosen so the seller can act without losing context of the queue.</p>
+      <p><strong>Seed timestamps vs Date.now():</strong> Priorities calculate against a fixed `SEED_REFERENCE_TIME`. This makes the demo predictable. Switching to real time later is a one-line change at the call site.</p>
+      
+      <div class="insight-box">
+        <strong>💡 The "Real vs Simulated" Architecture Insight</strong>
+        In this POC, there is no real API. But the seed data module (`orders.js`) is shaped exactly like an API response. <br><br>
+        When you add the WhatsApp Business API later, it won't change the UI, the engine, or the app state. It only replaces the static array in `orders.js` with a live fetch call. <br><br>
+        This is a real pattern called <em>dependency inversion</em> — the system depends on the shape of the data, not its source.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  OrderFlow · Spec (Draft) · Devpost Learn Build With AI: Basics · Canonical: <a href="spec.md">spec.md</a>
+</footer>
+
+<script>
+  function toggle(el){el.parentElement.classList.toggle('open')}
+  // Highlight active nav on scroll
+  const sections=document.querySelectorAll('section[id]');
+  const navLinks=document.querySelectorAll('.nav-item');
+  window.addEventListener('scroll',()=>{
+    let cur='';
+    sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id});
+    navLinks.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+cur)});
+  });
+</script>
+</body>
+</html>

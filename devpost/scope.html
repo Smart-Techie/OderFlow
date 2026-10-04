@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OrderFlow — Scope Review</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --accent2: #79c0ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --orange: #f0883e;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --critical: #f85149;
+      --high: #f0883e;
+      --medium: #d29922;
+      --low: #3fb950;
+      --cut: #6e7681;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 56px 32px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(88,166,255,0.08) 0%, transparent 70%);
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(63,185,80,0.1);
+      border: 1px solid rgba(63,185,80,0.3);
+      color: var(--green);
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 20px; margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 12px;
+    }
+    .hero-tagline { font-size: 1.1rem; color: var(--muted); max-width: 540px; margin: 0 auto 24px; }
+    .hero-kernel {
+      display: inline-block;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-left: 3px solid var(--accent); border-radius: var(--radius);
+      padding: 14px 20px; font-size: 0.93rem; color: var(--text);
+      max-width: 660px; text-align: left; margin-top: 8px;
+    }
+    .hero-kernel strong { color: var(--accent2); }
+
+    /* Layout */
+    .main { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* Section titles */
+    .section-title {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Persona */
+    .persona-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 24px;
+      display: flex; gap: 20px; align-items: flex-start; margin-bottom: 32px;
+    }
+    .persona-avatar {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, #1f6feb, #388bfd);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; flex-shrink: 0;
+    }
+    .persona-text h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .persona-text p { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+
+    /* System Flow */
+    .diagram-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 32px 24px; margin-bottom: 32px;
+      overflow-x: auto;
+    }
+    .flow {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; flex-wrap: nowrap; min-width: 620px;
+    }
+    .flow-col { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    .flow-node {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 16px;
+      text-align: center; font-size: 0.82rem; font-weight: 600;
+      min-width: 120px; white-space: nowrap;
+    }
+    .flow-node.channel-ec { border-color: var(--accent); color: var(--accent); }
+    .flow-node.channel-wa { border-color: var(--green); color: var(--green); }
+    .flow-node.engine {
+      background: linear-gradient(135deg, #1a2332, #1f2d42);
+      border-color: var(--accent); color: var(--text);
+      font-size: 0.9rem; padding: 18px 24px; min-width: 170px;
+    }
+    .engine-label { font-size: 0.7rem; color: var(--accent); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+    .p-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; justify-content: center; }
+    .p-pill {
+      display: inline-flex; align-items: center;
+      font-size: 0.72rem; font-weight: 700;
+      padding: 3px 8px; border-radius: 10px;
+    }
+    .p-pill.critical { background: rgba(248,81,73,0.15); color: var(--critical); border: 1px solid rgba(248,81,73,0.3); }
+    .p-pill.high { background: rgba(240,136,62,0.15); color: var(--high); border: 1px solid rgba(240,136,62,0.3); }
+    .p-pill.medium { background: rgba(210,153,34,0.15); color: var(--medium); border: 1px solid rgba(210,153,34,0.3); }
+    .p-pill.low { background: rgba(63,185,80,0.15); color: var(--low); border: 1px solid rgba(63,185,80,0.3); }
+    .flow-node.dash { border-color: var(--purple); color: var(--purple); min-width: 140px; }
+    .flow-node.action { border-color: var(--purple); color: var(--purple); font-size: 0.78rem; min-width: 130px; }
+    .arrow { font-size: 1.4rem; color: var(--border); padding: 0 8px; flex-shrink: 0; }
+
+    /* Priority factors grid */
+    .priority-factors {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px; margin-top: 20px;
+    }
+    .factor {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 14px;
+    }
+    .factor-icon { font-size: 1rem; margin-bottom: 4px; }
+    .factor-label { font-size: 0.83rem; font-weight: 600; color: var(--text); }
+    .factor-desc { color: var(--muted); font-size: 0.76rem; margin-top: 2px; }
+
+    /* Priority rules table */
+    .rules-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.87rem; margin-top: 4px;
+    }
+    .rules-table th {
+      text-align: left; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .rules-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .rules-table tr:last-child td { border-bottom: none; }
+    .rules-table tr:hover td { background: var(--surface2); }
+    .badge {
+      display: inline-block; font-size: 0.72rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 10px;
+    }
+    .badge.critical { background: rgba(248,81,73,0.15); color: var(--critical); border: 1px solid rgba(248,81,73,0.3); }
+    .badge.high { background: rgba(240,136,62,0.15); color: var(--high); border: 1px solid rgba(240,136,62,0.3); }
+    .badge.medium { background: rgba(210,153,34,0.15); color: var(--medium); border: 1px solid rgba(210,153,34,0.3); }
+    .badge.low { background: rgba(63,185,80,0.15); color: var(--low); border: 1px solid rgba(63,185,80,0.3); }
+
+    /* Order detail card preview */
+    .order-card-preview {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 32px;
+    }
+    .order-card-header {
+      padding: 14px 20px;
+      background: linear-gradient(90deg, rgba(248,81,73,0.08), transparent);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .order-card-body { padding: 20px; }
+    .order-fields {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
+    }
+    .order-field label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }
+    .order-field span { font-size: 0.9rem; color: var(--text); }
+    .priority-reason {
+      background: rgba(248,81,73,0.06); border: 1px solid rgba(248,81,73,0.2);
+      border-radius: var(--radius); padding: 12px 16px; margin-bottom: 14px;
+    }
+    .priority-reason .reason-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--critical); margin-bottom: 4px; }
+    .priority-reason .reason-text { font-size: 0.88rem; color: var(--text); }
+    .action-btn {
+      display: inline-block; background: var(--accent); color: #0d1117;
+      font-weight: 700; font-size: 0.9rem; padding: 10px 20px;
+      border-radius: var(--radius); cursor: pointer; border: none;
+    }
+
+    /* Core Loop */
+    .loop-steps { display: flex; flex-direction: column; gap: 2px; margin-bottom: 32px; }
+    .loop-step {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 16px 20px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 0;
+    }
+    .loop-step:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+    .loop-step:last-child { border-radius: 0 0 var(--radius) var(--radius); border-bottom: 1px solid var(--border); }
+    .step-num {
+      width: 28px; height: 28px;
+      background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.3);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 700; color: var(--accent);
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step-content h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; }
+    .step-content p { font-size: 0.85rem; color: var(--muted); }
+    .step-content .example {
+      display: inline-block; margin-top: 6px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 5px 10px;
+      font-size: 0.8rem; color: var(--accent2); font-style: italic;
+    }
+
+    /* Demo card */
+    .demo-card {
+      background: linear-gradient(135deg, #0d1b2a, #111d2e);
+      border: 1px solid rgba(88,166,255,0.2); border-radius: var(--radius-lg);
+      padding: 28px; margin-bottom: 32px; position: relative; overflow: hidden;
+    }
+    .demo-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+    }
+    .demo-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; color: var(--accent2); }
+    .demo-steps { display: flex; flex-direction: column; gap: 8px; }
+    .demo-step { display: flex; align-items: flex-start; gap: 10px; font-size: 0.88rem; }
+    .demo-step-num {
+      background: var(--accent); color: #0d1117;
+      font-size: 0.7rem; font-weight: 700;
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .wow-moment {
+      margin-top: 16px; padding: 14px 18px;
+      background: rgba(188,140,255,0.08); border: 1px solid rgba(188,140,255,0.2);
+      border-radius: var(--radius); font-size: 0.88rem; color: var(--purple);
+    }
+    .wow-moment strong { display: block; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; opacity: 0.7; }
+
+    /* Scope sections */
+    .scope-section {
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; margin-bottom: 12px;
+    }
+    .scope-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 20px; cursor: pointer; user-select: none;
+      background: var(--surface); transition: background 0.15s;
+    }
+    .scope-header:hover { background: var(--surface2); }
+    .scope-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .scope-dot.in { background: var(--green); }
+    .scope-dot.later { background: var(--accent); }
+    .scope-dot.cut { background: var(--cut); }
+    .scope-header-label { font-weight: 700; font-size: 0.9rem; flex: 1; }
+    .scope-header-label.in { color: var(--green); }
+    .scope-header-label.later { color: var(--accent2); }
+    .scope-header-label.cut { color: var(--cut); }
+    .scope-count {
+      background: var(--surface2); border: 1px solid var(--border);
+      font-size: 0.72rem; font-weight: 600;
+      padding: 2px 8px; border-radius: 10px; color: var(--muted);
+    }
+    .scope-chevron { color: var(--muted); font-size: 0.8rem; transition: transform 0.2s; }
+    .scope-section.open .scope-chevron { transform: rotate(180deg); }
+    .scope-body { display: none; padding: 4px 20px 16px; background: var(--surface); }
+    .scope-section.open .scope-body { display: block; }
+    .scope-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem;
+    }
+    .scope-item:last-child { border-bottom: none; }
+    .scope-item-icon { flex-shrink: 0; margin-top: 2px; }
+    .scope-item-text { color: var(--text); }
+    .scope-item-reason { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
+
+    footer {
+      text-align: center; padding: 32px;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.8rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .flow { min-width: 540px; }
+      .order-fields { grid-template-columns: 1fr; }
+      .hero { padding: 40px 16px 28px; }
+      .main { padding: 24px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-badge">✓ Scope Approved</div>
+  <h1>OrderFlow</h1>
+  <p class="hero-tagline">An AI-powered order operations assistant for small businesses and e-commerce sellers.</p>
+  <div class="hero-kernel">
+    <strong>The Kernel:</strong> OrderFlow inverts the usual dashboard. Instead of showing everything and letting
+    you figure out what matters, it reads every order's state, determines priority automatically, and surfaces
+    a plain-language explanation with a clear recommended action. <em>The seller doesn't scan — they respond.</em>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- Who It's For -->
+  <p class="section-title">Who It's For</p>
+  <div class="persona-card" style="margin-bottom:32px;">
+    <div class="persona-avatar">🧑‍💼</div>
+    <div class="persona-text">
+      <h3>Small Business Owner / Solo E-Commerce Seller</h3>
+      <p>Receives orders from both an online store and WhatsApp. Today they switch between a website backend,
+      a WhatsApp thread, and maybe a spreadsheet — spending more time figuring out what to do next than
+      actually doing it. OrderFlow gives them one place to see everything and tells them what to handle first.</p>
+    </div>
+  </div>
+
+  <!-- System Flow -->
+  <p class="section-title">System Flow</p>
+  <div class="diagram-wrap">
+    <div class="flow">
+      <div class="flow-col">
+        <div class="flow-node channel-ec">🛒 E-Commerce Store<br><span style="font-size:0.7rem;opacity:0.7">(simulated)</span></div>
+        <div class="flow-node channel-wa">💬 WhatsApp<br><span style="font-size:0.7rem;opacity:0.7">(simulated)</span></div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-col">
+        <div class="flow-node engine">
+          <div class="engine-label">OrderFlow</div>
+          Priority Engine<br>
+          <span style="font-size:0.74rem;color:var(--muted)">Rule-based · Built-in defaults</span>
+          <div class="p-pills">
+            <span class="p-pill critical">Critical</span>
+            <span class="p-pill high">High</span>
+            <span class="p-pill medium">Medium</span>
+            <span class="p-pill low">Low</span>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-col">
+        <div class="flow-node dash">📋 Dashboard<br><span style="font-size:0.74rem;opacity:0.7">Priority list + plain-English reason</span></div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-col">
+        <div class="flow-node action">✅ Accept Order</div>
+        <div class="flow-node action">🔄 Update Status</div>
+        <div class="flow-node action">📞 Contact Customer</div>
+      </div>
+    </div>
+
+    <div style="margin-top:28px;">
+      <p style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Priority Engine Factors</p>
+      <div class="priority-factors">
+        <div class="factor"><div class="factor-icon">⏱️</div><div class="factor-label">Order Age</div><div class="factor-desc">Older unacted orders rise in priority</div></div>
+        <div class="factor"><div class="factor-icon">🚨</div><div class="factor-label">Stall Detection</div><div class="factor-desc">Same status for too long → flagged</div></div>
+        <div class="factor"><div class="factor-icon">📅</div><div class="factor-label">Deadline Proximity</div><div class="factor-desc">Approaching fulfillment deadline → Critical</div></div>
+        <div class="factor"><div class="factor-icon">💬</div><div class="factor-label">Awaiting Response</div><div class="factor-desc">Customer waiting for seller reply</div></div>
+        <div class="factor"><div class="factor-icon">⚠️</div><div class="factor-label">Issue Flags</div><div class="factor-desc">Missing info, unconfirmed payment</div></div>
+        <div class="factor"><div class="factor-icon">📱</div><div class="factor-label">Channel Type</div><div class="factor-desc">WhatsApp orders need faster replies</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Priority Rules -->
+  <p class="section-title">Priority Rules (POC)</p>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:32px;">
+    <div style="padding:16px 20px 0;">
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">Built-in, sensible defaults — no configuration required. Designed to be configurable later.</p>
+    </div>
+    <table class="rules-table">
+      <thead>
+        <tr>
+          <th>Condition</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Order approaching a fulfillment deadline</td><td><span class="badge critical">Critical</span></td></tr>
+        <tr><td>New order requiring seller action</td><td><span class="badge high">High</span></td></tr>
+        <tr><td>Order waiting too long for seller response</td><td><span class="badge high">High</span></td></tr>
+        <tr><td>Order stalled in the same status too long</td><td><span class="badge high">High</span></td></tr>
+        <tr><td>Missing information or payment flag</td><td><span class="badge high">High</span></td></tr>
+        <tr><td>WhatsApp order with no response yet</td><td><span class="badge high">High</span></td></tr>
+        <tr><td>Normal in-progress order, on track</td><td><span class="badge low">Low / Medium</span></td></tr>
+      </tbody>
+    </table>
+    <div style="padding:14px 20px;border-top:1px solid var(--border);background:var(--surface2);">
+      <p style="font-size:0.83rem;color:var(--muted);">Each order gets a label + a plain-English reason: <em style="color:var(--accent2);">"High priority — customer has been waiting 2 hours for confirmation."</em></p>
+    </div>
+  </div>
+
+  <!-- Order Detail Card -->
+  <p class="section-title">Order Detail — What the Seller Sees</p>
+  <div class="order-card-preview" style="margin-bottom:32px;">
+    <div class="order-card-header">
+      <span class="badge critical">Critical</span>
+      <span style="font-size:0.9rem;font-weight:700;">Order #1042 — Adunola Fashions</span>
+      <span style="margin-left:auto;font-size:0.78rem;color:var(--muted);">2 items · ₦18,500</span>
+    </div>
+    <div class="order-card-body">
+      <div class="order-fields">
+        <div class="order-field"><label>① What it is</label><span>2x Ankara Print Dress (M, L)</span></div>
+        <div class="order-field"><label>② Where it came from</label><span>💬 WhatsApp</span></div>
+        <div class="order-field"><label>③ Current Status</label><span>New — awaiting acceptance</span></div>
+        <div class="order-field"><label>Customer</label><span>Chiamaka Osei · +234 803 xxx xxxx</span></div>
+      </div>
+      <div class="priority-reason">
+        <div class="reason-label">④ Why it's important</div>
+        <div class="reason-text">Critical — order is approaching its expected fulfillment deadline and has not been accepted yet.</div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:10px;">⑤ Recommended next action</p>
+      <button class="action-btn">⑥ Accept Order →</button>
+    </div>
+  </div>
+
+  <!-- Core Loop -->
+  <p class="section-title">Core Loop</p>
+  <div class="loop-steps">
+    <div class="loop-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Seller opens OrderFlow</h4>
+        <p>Dashboard: total orders, attention-needed count, critical/high count, top recommended actions.</p>
+      </div>
+    </div>
+    <div class="loop-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Priority is surfaced automatically</h4>
+        <p>Every order is scored and labelled. The most urgent ones surface at the top with a short explanation.</p>
+        <span class="example">"High priority — customer has been waiting 2 hours for confirmation."</span>
+      </div>
+    </div>
+    <div class="loop-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Seller opens the most urgent order</h4>
+        <p>Full detail view: what, where, status, why, next action, and one clear action button.</p>
+      </div>
+    </div>
+    <div class="loop-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Seller takes the guided action</h4>
+        <p>Accept · Mark Processing · Mark Ready · Mark Shipped · Complete · Contact Customer.</p>
+      </div>
+    </div>
+    <div class="loop-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h4>Dashboard updates, next order surfaces</h4>
+        <p>Status changes immediately. The next recommended action appears. Repeat until the queue is clear.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo -->
+  <p class="section-title">What "Working" Looks Like</p>
+  <div class="demo-card">
+    <h3>🎬 The 60-Second Demo</h3>
+    <div class="demo-steps">
+      <div class="demo-step"><div class="demo-step-num">1</div><span>Seller opens OrderFlow. Several orders are visible — a realistic mix from simulated e-commerce and WhatsApp.</span></div>
+      <div class="demo-step"><div class="demo-step-num">2</div><span>OrderFlow automatically identifies one or two orders needing attention — with a plain-English explanation of why.</span></div>
+      <div class="demo-step"><div class="demo-step-num">3</div><span>The seller clicks the recommended action.</span></div>
+      <div class="demo-step"><div class="demo-step-num">4</div><span>The order status changes. Dashboard updates. The next important order surfaces.</span></div>
+    </div>
+    <div class="wow-moment">
+      <strong>✨ The "That's Genuinely Useful" Moment</strong>
+      "I didn't have to scan through all these orders myself. OrderFlow told me exactly what needed my attention and what to do next."
+    </div>
+  </div>
+
+  <!-- In / Later / Cut -->
+  <p class="section-title">POC Boundary</p>
+
+  <div class="scope-section open" id="sec-in">
+    <div class="scope-header" onclick="toggle('sec-in')">
+      <span class="scope-dot in"></span>
+      <span class="scope-header-label in">In Scope — Proof of Concept</span>
+      <span class="scope-count">7 items</span>
+      <span class="scope-chevron">▼</span>
+    </div>
+    <div class="scope-body">
+      <div class="scope-item"><span class="scope-item-icon">✅</span><div><div class="scope-item-text"><strong>Dashboard</strong></div><div class="scope-item-reason">Total orders, attention-needed count, critical/high count, top recommended actions.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">✅</span><div><div class="scope-item-text"><strong>Priority Order List</strong></div><div class="scope-item-reason">Critical → High → Medium → Low, each with a one-line plain-English reason.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">✅</span><div><div class="scope-item-text"><strong>Order Detail View</strong></div><div class="scope-item-reason">What, where, status, why, next action, and one clear action button — all six elements.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">✅</span><div><div class="scope-item-text"><strong>Status Workflow</strong></div><div class="scope-item-reason">New → Accepted → Processing → Ready for Delivery → Shipped → Completed.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">✅</span><div><div class="scope-item-text"><strong>Auto-Prioritization Engine</strong></div><div class="scope-item-reason">Rule-based, deterministic, built-in defaults. Level + human-readable reason per order.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">✅</span><div><div class="scope-item-text"><strong>Contact Customer Action</strong></div><div class="scope-item-reason">Surfaces WhatsApp number or email as tappable link. No in-app messaging.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">✅</span><div><div class="scope-item-text"><strong>Simulated Order Data</strong></div><div class="scope-item-reason">Realistic pre-seeded orders: stalled, waiting, deadline-approaching, and normal — both channels.</div></div></div>
+    </div>
+  </div>
+
+  <div class="scope-section" id="sec-later">
+    <div class="scope-header" onclick="toggle('sec-later')">
+      <span class="scope-dot later"></span>
+      <span class="scope-header-label later">Later — Post-POC</span>
+      <span class="scope-count">7 items</span>
+      <span class="scope-chevron">▼</span>
+    </div>
+    <div class="scope-body">
+      <div class="scope-item"><span class="scope-item-icon">🔜</span><div><div class="scope-item-text"><strong>Real WhatsApp Business API</strong></div><div class="scope-item-reason">Slots into the mock channel slot — system designed for this.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🔜</span><div><div class="scope-item-text"><strong>Real E-Commerce Integrations</strong></div><div class="scope-item-reason">Shopify, WooCommerce, or similar.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🔜</span><div><div class="scope-item-text"><strong>Configurable Priority Rules</strong></div><div class="scope-item-reason">Sellers adjust thresholds and add custom rules. Built-in defaults stay as fallback.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🔜</span><div><div class="scope-item-text"><strong>AI/ML Smarter Prioritization</strong></div><div class="scope-item-reason">Trained on real order history as data accumulates.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🔜</span><div><div class="scope-item-text"><strong>Push / Email Notifications</strong></div><div class="scope-item-reason">Alert when a new critical order arrives.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🔜</span><div><div class="scope-item-text"><strong>Multi-User / Team Access</strong></div><div class="scope-item-reason">Roles and permissions for operations teams.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🔜</span><div><div class="scope-item-text"><strong>Analytics & Reporting</strong></div><div class="scope-item-reason">Fulfillment performance, response times, order trends.</div></div></div>
+    </div>
+  </div>
+
+  <div class="scope-section" id="sec-cut">
+    <div class="scope-header" onclick="toggle('sec-cut')">
+      <span class="scope-dot cut"></span>
+      <span class="scope-header-label cut">Explicitly Cut — Named & Reasoned</span>
+      <span class="scope-count">6 items</span>
+      <span class="scope-chevron">▼</span>
+    </div>
+    <div class="scope-body">
+      <div class="scope-item"><span class="scope-item-icon">🚫</span><div><div class="scope-item-text"><strong>Real Payment Processing</strong></div><div class="scope-item-reason">Payment status is a data field only — no transactions handled.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🚫</span><div><div class="scope-item-text"><strong>In-App Messaging / Chat</strong></div><div class="scope-item-reason">"Contact customer" links out. Real-time messaging is out of scope.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🚫</span><div><div class="scope-item-text"><strong>Live Order Syncing / Webhooks</strong></div><div class="scope-item-reason">Orders are seeded. No external platform dependencies.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🚫</span><div><div class="scope-item-text"><strong>Mobile App</strong></div><div class="scope-item-reason">Web browser only. Responsive is fine; a dedicated app is later.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🚫</span><div><div class="scope-item-text"><strong>Multi-Seller Accounts / Login</strong></div><div class="scope-item-reason">Single seller, no auth. Keeps build focused on the core loop.</div></div></div>
+      <div class="scope-item"><span class="scope-item-icon">🚫</span><div><div class="scope-item-text"><strong>Configurable Priority Rules (POC)</strong></div><div class="scope-item-reason">Sensible built-in defaults; configuration UI is explicitly later.</div></div></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  OrderFlow · Scope Document (<strong style="color:var(--green);">Approved</strong>) · Devpost Learn Build With AI: Basics
+  · Canonical: <a href="scope.md">scope.md</a>
+</footer>
+
+<script>
+  function toggle(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+</script>
+</body>
+</html>
