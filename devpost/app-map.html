@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrderFlow — App Map</title>
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161b22; --surface2: #1c2128; --border: #30363d;
+      --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff;
+      --radius: 8px; --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; padding: 40px 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { font-size: 2rem; margin-bottom: 8px; color: var(--text); }
+    .subtitle { color: var(--muted); margin-bottom: 40px; font-size: 1.1rem; }
+    h2 { font-size: 1.25rem; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    p { margin-bottom: 16px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+    
+    .diagram-box { text-align: center; padding: 32px; background: var(--surface2); border-radius: var(--radius); margin-bottom: 24px; border: 1px solid var(--border); overflow-x: auto; }
+    .diagram { display: inline-flex; align-items: center; gap: 16px; min-width: 600px; }
+    .d-node { background: var(--surface); border: 1px solid var(--accent); padding: 12px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-align: center; }
+    .d-sub { display: block; font-size: 0.75rem; color: var(--muted); font-weight: 400; margin-top: 4px; }
+    .d-arrow { color: var(--muted); font-weight: bold; }
+    
+    .route-stop { display: flex; gap: 16px; margin-bottom: 20px; }
+    .stop-num { background: rgba(88, 166, 255, 0.1); color: var(--accent); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; border: 1px solid rgba(88, 166, 255, 0.3); font-size: 0.85rem; }
+    .stop-content { flex: 1; }
+    .stop-path { font-family: monospace; font-size: 0.85rem; color: var(--accent); margin-bottom: 4px; display: inline-block; padding: 2px 6px; background: rgba(88, 166, 255, 0.1); border-radius: 4px; }
+    
+    ul { padding-left: 24px; margin-bottom: 16px; }
+    li { margin-bottom: 8px; }
+    code { font-family: monospace; font-size: 0.9em; background: rgba(255, 255, 255, 0.1); padding: 2px 4px; border-radius: 4px; }
+    
+    .takeaway { background: rgba(63, 185, 80, 0.1); border: 1px solid rgba(63, 185, 80, 0.3); padding: 20px; border-radius: var(--radius); }
+    .takeaway h3 { color: #3fb950; font-size: 1rem; margin-bottom: 8px; }
+    
+    footer { margin-top: 60px; text-align: center; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 24px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>OrderFlow App Map</h1>
+  <div class="subtitle">A guide to how your proof of concept is built and where to make changes.</div>
+
+  <div class="card">
+    <p><strong>OrderFlow</strong> is a client-side vanilla JavaScript app that uses a frozen seed dataset to demonstrate an intelligent order operations assistant. It has no server, no database, and no build step. It relies entirely on ES Modules and a client-side state object.</p>
+    <p>To run it: Double-click <code>index.html</code> (or serve the folder with a local server like <code>python -m http.server</code>) and it works instantly.</p>
+  </div>
+
+  <h2>How an Action Works</h2>
+  <div class="diagram-box">
+    <div class="diagram">
+      <div class="d-node">UI Action<span class="d-sub">Click "Accept Order"</span></div>
+      <div class="d-arrow">&rarr;</div>
+      <div class="d-node">App State<span class="d-sub">app.js updates status</span></div>
+      <div class="d-arrow">&rarr;</div>
+      <div class="d-node">Priority Engine<span class="d-sub">priority.js recalculates</span></div>
+      <div class="d-arrow">&rarr;</div>
+      <div class="d-node">UI Re-render<span class="d-sub">list, panel, dashboard</span></div>
+    </div>
+  </div>
+
+  <h2>The Code Route: Clicking an Action Button</h2>
+  <div class="card">
+    <div class="route-stop">
+      <div class="stop-num">1</div>
+      <div class="stop-content">
+        <div class="stop-path">js/components/order-panel.js</div>
+        <p>This UI component renders the right-side detail view. When you click the "Accept Order" button, it triggers the <code>onActionClick</code> callback, passing the order ID and the new status.</p>
+      </div>
+    </div>
+    <div class="route-stop">
+      <div class="stop-num">2</div>
+      <div class="stop-content">
+        <div class="stop-path">js/app.js > handleActionClick()</div>
+        <p>The central coordinator catches the click. It finds the order in <code>state.orders</code>, updates its status, sets the "last changed" time to our simulated current time, and then calls <code>updatePrioritiesAndSort()</code>.</p>
+      </div>
+    </div>
+    <div class="route-stop">
+      <div class="stop-num">3</div>
+      <div class="stop-content">
+        <div class="stop-path">js/engine/priority.js > calculatePriority()</div>
+        <p>The priority engine is completely separated from the UI. It receives the updated order, applies the 8 rules, and returns the new priority level and plain-English reason. The app state then re-sorts the queue and triggers a full UI render.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>To change this, start here:</h2>
+  <div class="card">
+    <ul>
+      <li><strong>To add a real API integration:</strong> Go to <code>js/data/orders.js</code>. Instead of exporting the static array, write a <code>fetch()</code> call that returns data in that exact same shape. <em>The rest of the app won't know the difference.</em></li>
+      <li><strong>To tweak the priority rules:</strong> Go to <code>js/engine/priority.js</code>. You can change thresholds or add new rules without ever touching the UI.</li>
+      <li><strong>To change the colors or fonts:</strong> Go to <code>css/base.css</code>. All colors are stored as CSS variables (e.g., <code>--critical: #f85149;</code>) at the top of the file.</li>
+      <li><strong>To add a new status transition:</strong> Update the <code>actionMap</code> at the top of <code>js/components/order-panel.js</code>.</li>
+    </ul>
+  </div>
+
+  <div class="takeaway">
+    <h3>A Practice to Reuse: Dependency Inversion (The Data Seam)</h3>
+    <p>By keeping all simulated order data inside a single isolated file (<code>orders.js</code>) formatted exactly like a real API response, we proved the complex UI and Priority Engine behavior without needing to build a backend first.</p>
+    <p><strong>Next time you build:</strong> Isolate your dummy data into a single module. Build your app to read that module. When you're ready for the real API, you only have to rewrite that one module, and your entire frontend will just work.</p>
+  </div>
+
+  <footer>
+    This map is a snapshot of the code at the end of the Devpost build session. It works entirely offline.
+  </footer>
+</div>
+
+</body>
+</html>
