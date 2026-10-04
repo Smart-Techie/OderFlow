@@ -19,7 +19,7 @@ Build mode: fast
   Learner check: Open `index.html` in your browser. Look at the top order and confirm you see the "Critical" badge and the explanation for why it needs attention.
   Commit: `Add priority engine and order list UI`
 
-- [ ] **2. The Order Detail Panel**
+- [x] **2. The Order Detail Panel**
   Becomes usable: The seller can select an order to see its full details and recommended action in the right panel without losing sight of the queue.
   Why now: Closes the "Understand" part of the loop. We need to see the details and action recommendation before we can actually perform the action.
   PRD ref: `prd.md > Order Detail View`, `prd.md > Contact Customer`

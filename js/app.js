@@ -2,6 +2,7 @@ import { seedOrders, SEED_REFERENCE_TIME } from './data/orders.js';
 import { calculatePriority } from './engine/priority.js';
 import { renderOrderList } from './components/order-list.js';
 import { renderOrderPanel } from './components/order-panel.js';
+import { renderDashboard } from './components/dashboard.js';
 
 // App State
 const state = {
@@ -55,6 +56,10 @@ function updatePrioritiesAndSort() {
 
 // Render the application UI
 function render() {
+  // Render Top Summary Bar
+  const summaryContainer = document.getElementById('summary-bar-container');
+  renderDashboard(summaryContainer, state.orders);
+
   // Render Left Panel: Order List
   const listContainer = document.getElementById('order-list-container');
   renderOrderList(listContainer, state.orders, state.selectedOrderId, handleOrderSelect);
@@ -72,8 +77,23 @@ function handleOrderSelect(orderId) {
 }
 
 function handleActionClick(orderId, nextStatus) {
-  // Will be fully implemented in Slice 3
-  console.log(`Action clicked for ${orderId}, transition to ${nextStatus}`);
+  const order = state.orders.find(o => o.id === orderId);
+  if (order) {
+    // Advance status
+    order.status = nextStatus;
+    
+    // Simulate current time as the reference time so priority engine works correctly for the POC
+    order.lastStatusChangedAt = SEED_REFERENCE_TIME;
+    
+    // If completed, clear selection to show empty state, or keep it to see completed view. 
+    // We'll keep it so they can see "Order Completed" in the panel.
+    
+    // Recalculate priorities and re-sort the queue
+    updatePrioritiesAndSort();
+    
+    // Re-render everything
+    render();
+  }
 }
 
 // Start the app
