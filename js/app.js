@@ -30,6 +30,12 @@ function init() {
 
   updatePrioritiesAndSort();
   render();
+  
+  // Wire Simulate Button
+  const simBtn = document.getElementById('simulate-btn');
+  if (simBtn) {
+    simBtn.addEventListener('click', handleSimulate);
+  }
 }
 
 // Runs priority engine on all orders and sorts them
@@ -94,6 +100,31 @@ function handleActionClick(orderId, nextStatus) {
     // Re-render everything
     render();
   }
+}
+
+let simCounter = 1;
+
+function handleSimulate() {
+  // Create a new WhatsApp order that arrived "just now" (relative to SEED_REFERENCE_TIME)
+  const newOrder = {
+    id: `#200${simCounter++}`,
+    customer: { name: "Simulated Customer", phone: "+234 800 000 0000", email: null, whatsappNumber: "2348000000000" },
+    items: [
+      { name: "Demo Product", qty: 1, variant: "Blue" }
+    ],
+    total: 5000,
+    currency: "₦",
+    channel: "whatsapp",
+    status: "new",
+    placedAt: SEED_REFERENCE_TIME,
+    expectedBy: new Date(SEED_REFERENCE_TIME.getTime() + 24 * 60 * 60 * 1000),
+    lastStatusChangedAt: SEED_REFERENCE_TIME,
+    flags: []
+  };
+
+  state.orders.push(newOrder);
+  updatePrioritiesAndSort();
+  render();
 }
 
 // Start the app

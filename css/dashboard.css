@@ -45,6 +45,37 @@
   color: var(--high);
 }
 
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.app-logo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.simulate-btn {
+  background-color: var(--surface2);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.simulate-btn:hover {
+  background-color: var(--accent);
+  color: #0d1117;
+  border-color: var(--accent);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .summary-grid {

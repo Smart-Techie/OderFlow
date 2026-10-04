@@ -16,8 +16,14 @@
 <body>
   
   <div class="app-container">
-    <!-- Top Summary Bar (Will be added in Slice 3) -->
-    <header class="dashboard-header" id="summary-bar-container"></header>
+    <!-- Top Summary Bar -->
+    <header class="dashboard-header">
+      <div class="header-content">
+        <h1 class="app-logo">OrderFlow</h1>
+        <button id="simulate-btn" class="simulate-btn">Simulate New Order</button>
+      </div>
+      <div id="summary-bar-container"></div>
+    </header>
     
     <main class="split-view">
       <!-- Left Panel: Order List -->

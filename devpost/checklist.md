@@ -29,7 +29,7 @@ Build mode: fast
   Learner check: Click order #1042 in the list. Confirm the right panel opens, stays open, and clearly shows the recommended "Accept Order" action.
   Commit: `Add order detail panel and selection state`
 
-- [ ] **3. Taking Action and Updating State**
+- [x] **3. Taking Action and Updating State**
   Becomes usable: The seller can click the action button to advance the order, which instantly updates its status, recalculates its priority, and updates the dashboard summary counts.
   Why now: This completes the "Act" part of the core loop and proves the state updates correctly.
   PRD ref: `prd.md > Status Workflow`, `prd.md > Dashboard Summary Bar`
