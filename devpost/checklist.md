@@ -71,3 +71,5 @@ Reflection: Already covered (user verified success and wanted to proceed).
 Activity mode: brief recap
 
 ## Revisions
+
+- Added interactive queue filtering via dashboard cards — the learner requested this feature to easily drill down into specific priority categories.

@@ -11,6 +11,21 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.summary-card:hover {
+  background-color: var(--surface);
+  border-color: var(--green-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.summary-card.active {
+  border-color: var(--green);
+  background-color: var(--green-light);
+  box-shadow: 0 0 0 1px var(--green);
 }
 
 .summary-card.attention {

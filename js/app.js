@@ -7,7 +7,8 @@ import { renderDashboard } from './components/dashboard.js';
 // App State
 const state = {
   orders: [],
-  selectedOrderId: null
+  selectedOrderId: null,
+  currentFilter: 'all'
 };
 
 // Priority Weight Mapping for sorting
@@ -64,11 +65,21 @@ function updatePrioritiesAndSort() {
 function render() {
   // Render Top Summary Bar
   const summaryContainer = document.getElementById('summary-bar-container');
-  renderDashboard(summaryContainer, state.orders);
+  renderDashboard(summaryContainer, state.orders, state.currentFilter, handleFilterSelect);
+
+  // Filter orders for the list
+  let filteredOrders = state.orders;
+  if (state.currentFilter === 'critical') {
+    filteredOrders = state.orders.filter(o => o.priority === 'critical' && o.status !== 'completed');
+  } else if (state.currentFilter === 'high') {
+    filteredOrders = state.orders.filter(o => o.priority === 'high' && o.status !== 'completed');
+  } else if (state.currentFilter === 'attention') {
+    filteredOrders = state.orders.filter(o => (o.priority === 'critical' || o.priority === 'high') && o.status !== 'completed');
+  }
 
   // Render Left Panel: Order List
   const listContainer = document.getElementById('order-list-container');
-  renderOrderList(listContainer, state.orders, state.selectedOrderId, handleOrderSelect);
+  renderOrderList(listContainer, filteredOrders, state.selectedOrderId, handleOrderSelect);
   
   // Render Right Panel: Order Detail
   const detailContainer = document.getElementById('order-detail-container');
@@ -79,6 +90,16 @@ function render() {
 // Action Handlers
 function handleOrderSelect(orderId) {
   state.selectedOrderId = orderId;
+  render();
+}
+
+function handleFilterSelect(filter) {
+  // If clicking the same filter, reset to 'all'
+  if (state.currentFilter === filter) {
+    state.currentFilter = 'all';
+  } else {
+    state.currentFilter = filter;
+  }
   render();
 }
 
