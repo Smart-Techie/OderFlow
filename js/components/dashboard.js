@@ -19,7 +19,7 @@ export function renderDashboard(container, orders, currentFilter, onFilterSelect
         <span class="s-label">Critical</span>
         <span class="s-value">${criticalCount}</span>
       </div>
-      <div class="summary-card ${currentFilter === 'high' ? 'active' : ''}" data-filter="high">
+      <div class="summary-card ${highCount > 0 ? 'high' : ''} ${currentFilter === 'high' ? 'active' : ''}" data-filter="high">
         <span class="s-label">High Priority</span>
         <span class="s-value">${highCount}</span>
       </div>

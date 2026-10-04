@@ -116,9 +116,9 @@
 
 .view-btn {
   font-size: 0.75rem;
-  color: var(--orange);
-  background: var(--orange-light);
-  border: 1px solid rgba(234, 88, 12, 0.2);
+  color: var(--green);
+  background: var(--surface);
+  border: 1px solid var(--green);
   border-radius: var(--radius-sm);
   padding: 4px 10px;
 }

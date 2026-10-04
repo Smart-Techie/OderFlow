@@ -1,32 +1,35 @@
 :root {
-  --bg: #ffffff;
-  --surface: #ffffff;
-  --surface2: #f3f4f6; /* purely neutral light gray, zero warmth */
-  --border: #e5e7eb;
-  --text: #111827; /* Dark charcoal */
-  --muted: #6b7280;
+  /* Layout Backgrounds */
+  --bg: #F7F9F7;
+  --surface: #FFFFFF;
+  --surface2: #F7F9F7;
   
-  /* Brand colors */
-  --green: #059669; /* Primary action green */
-  --green-hover: #047857;
-  --green-light: rgba(5, 150, 105, 0.1);
+  /* Borders and Text */
+  --border: #E1E3E1; /* Subtle light gray */
+  --text: #17201A;
+  --muted: #6B726F;
   
-  --orange: #ea580c; /* Accent orange */
-  --orange-hover: #c2410c;
-  --orange-light: rgba(234, 88, 12, 0.1);
+  /* Brand Colors */
+  --green: #168A45;
+  --green-hover: #127238;
+  --green-light: #EAF6EF; /* Provided light tint */
+  
+  --orange: #F28C28;
+  --orange-hover: #D97C22;
+  --orange-light: rgba(242, 140, 40, 0.1);
   
   /* Semantic priority colors */
-  --critical: #dc2626; /* Red for critical only */
-  --critical-bg: rgba(220, 38, 38, 0.1);
+  --critical: #E84824; /* Strong orange/red-orange */
+  --critical-bg: rgba(232, 72, 36, 0.1);
   
-  --high: var(--orange); /* Orange for attention */
-  --high-bg: var(--orange-light);
+  --high: #F28C28; /* Accent Orange */
+  --high-bg: rgba(242, 140, 40, 0.1);
   
-  --medium: #ca8a04; /* Distinct gold/yellow */
-  --medium-bg: rgba(202, 138, 4, 0.1);
+  --medium: #DCA029; /* Distinct gold/yellow */
+  --medium-bg: rgba(220, 160, 41, 0.1);
   
-  --low: #9ca3af; /* Neutral gray for completed */
-  --low-bg: rgba(156, 163, 175, 0.1);
+  --low: #168A45; /* Green for low/completed */
+  --low-bg: #EAF6EF;
   
   --radius-sm: 6px;
   --radius-md: 8px;
