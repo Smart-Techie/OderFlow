@@ -9,8 +9,8 @@
 .dashboard-header {
   flex-shrink: 0;
   padding: 20px 24px;
-  background-color: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background-color: var(--green);
+  border-bottom: 1px solid var(--green-hover);
 }
 
 .split-view {
