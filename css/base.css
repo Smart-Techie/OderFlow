@@ -1,26 +1,32 @@
 :root {
-  --bg: #0d1117;
-  --surface: #161b22;
-  --surface2: #1c2128;
-  --border: #30363d;
-  --text: #e6edf3;
-  --muted: #8b949e;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface2: #f8f9fc;
+  --border: #e2e8f0;
+  --text: #1e293b; /* Dark charcoal */
+  --muted: #64748b;
   
-  --accent: #58a6ff;
-  --accent-hover: #79c0ff;
+  /* Brand colors */
+  --green: #115e59; /* Deep green */
+  --green-hover: #0f766e;
+  --green-light: rgba(17, 94, 89, 0.1);
+  
+  --orange: #ea580c; /* Primary CTA */
+  --orange-hover: #f97316;
+  --orange-light: rgba(234, 88, 12, 0.15);
   
   /* Semantic priority colors */
-  --critical: #f85149;
-  --critical-bg: rgba(248, 81, 73, 0.15);
+  --critical: #dc2626; /* Red for critical only */
+  --critical-bg: rgba(220, 38, 38, 0.1);
   
-  --high: #f0883e;
-  --high-bg: rgba(240, 136, 62, 0.15);
+  --high: #ea580c; /* Orange */
+  --high-bg: rgba(234, 88, 12, 0.1);
   
-  --medium: #d29922;
-  --medium-bg: rgba(210, 153, 34, 0.15);
+  --medium: #ca8a04; /* Yellowish */
+  --medium-bg: rgba(202, 138, 4, 0.1);
   
-  --low: #3fb950;
-  --low-bg: rgba(63, 185, 80, 0.15);
+  --low: #115e59; /* Deep Green for low priority/completed */
+  --low-bg: rgba(17, 94, 89, 0.1);
   
   --radius-sm: 6px;
   --radius-md: 8px;

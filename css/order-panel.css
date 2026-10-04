@@ -134,8 +134,8 @@
 }
 
 .primary-action-btn {
-  background-color: var(--accent);
-  color: #0d1117;
+  background-color: var(--orange);
+  color: #ffffff;
   font-size: 0.95rem;
   font-weight: 700;
   padding: 12px 24px;
@@ -144,7 +144,7 @@
 }
 
 .primary-action-btn:hover {
-  background-color: var(--accent-hover);
+  background-color: var(--orange-hover);
 }
 
 .completed-state {
@@ -167,7 +167,7 @@
 }
 
 .contact-link {
-  color: var(--accent);
+  color: var(--green);
   text-decoration: none;
   font-size: 0.85rem;
   display: flex;
