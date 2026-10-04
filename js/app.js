@@ -1,6 +1,7 @@
 import { seedOrders, SEED_REFERENCE_TIME } from './data/orders.js';
 import { calculatePriority } from './engine/priority.js';
 import { renderOrderList } from './components/order-list.js';
+import { renderOrderPanel } from './components/order-panel.js';
 
 // App State
 const state = {
@@ -58,13 +59,21 @@ function render() {
   const listContainer = document.getElementById('order-list-container');
   renderOrderList(listContainer, state.orders, state.selectedOrderId, handleOrderSelect);
   
-  // Detail Panel will be rendered here in Slice 2
+  // Render Right Panel: Order Detail
+  const detailContainer = document.getElementById('order-detail-container');
+  const selectedOrder = state.orders.find(o => o.id === state.selectedOrderId);
+  renderOrderPanel(detailContainer, selectedOrder, handleActionClick);
 }
 
 // Action Handlers
 function handleOrderSelect(orderId) {
   state.selectedOrderId = orderId;
   render();
+}
+
+function handleActionClick(orderId, nextStatus) {
+  // Will be fully implemented in Slice 3
+  console.log(`Action clicked for ${orderId}, transition to ${nextStatus}`);
 }
 
 // Start the app
