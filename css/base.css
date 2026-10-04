@@ -1,32 +1,32 @@
 :root {
   --bg: #ffffff;
   --surface: #ffffff;
-  --surface2: #f8f9fc;
-  --border: #e2e8f0;
-  --text: #1e293b; /* Dark charcoal */
-  --muted: #64748b;
+  --surface2: #f3f4f6; /* purely neutral light gray, zero warmth */
+  --border: #e5e7eb;
+  --text: #111827; /* Dark charcoal */
+  --muted: #6b7280;
   
   /* Brand colors */
-  --green: #115e59; /* Deep green */
-  --green-hover: #0f766e;
-  --green-light: rgba(17, 94, 89, 0.1);
+  --green: #059669; /* Primary action green */
+  --green-hover: #047857;
+  --green-light: rgba(5, 150, 105, 0.1);
   
-  --orange: #ea580c; /* Primary CTA */
-  --orange-hover: #f97316;
-  --orange-light: rgba(234, 88, 12, 0.15);
+  --orange: #ea580c; /* Accent orange */
+  --orange-hover: #c2410c;
+  --orange-light: rgba(234, 88, 12, 0.1);
   
   /* Semantic priority colors */
   --critical: #dc2626; /* Red for critical only */
   --critical-bg: rgba(220, 38, 38, 0.1);
   
-  --high: #ea580c; /* Orange */
-  --high-bg: rgba(234, 88, 12, 0.1);
+  --high: var(--orange); /* Orange for attention */
+  --high-bg: var(--orange-light);
   
-  --medium: #ca8a04; /* Yellowish */
+  --medium: #ca8a04; /* Distinct gold/yellow */
   --medium-bg: rgba(202, 138, 4, 0.1);
   
-  --low: #115e59; /* Deep Green for low priority/completed */
-  --low-bg: rgba(17, 94, 89, 0.1);
+  --low: #9ca3af; /* Neutral gray for completed */
+  --low-bg: rgba(156, 163, 175, 0.1);
   
   --radius-sm: 6px;
   --radius-md: 8px;
