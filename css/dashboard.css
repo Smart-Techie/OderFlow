@@ -93,13 +93,13 @@
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #ffffff;
+  color: var(--green);
 }
 
 .simulate-btn {
-  background-color: #ffffff;
+  background-color: var(--surface);
   color: var(--green);
-  border: 1px solid #ffffff;
+  border: 1px solid var(--green);
   padding: 8px 16px;
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
@@ -108,7 +108,7 @@
 }
 
 .simulate-btn:hover {
-  background-color: var(--bg); /* Light gray */
+  background-color: var(--green-light);
 }
 
 /* Responsive */

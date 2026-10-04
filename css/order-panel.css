@@ -154,7 +154,7 @@
   font-size: 0.95rem;
   padding: 12px 24px;
   border: 1px solid var(--low);
-  background-color: var(--low-bg);
+  background-color: var(--surface);
   border-radius: var(--radius-md);
 }
 

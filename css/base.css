@@ -20,8 +20,8 @@
   /* Semantic priority colors */
   --critical: #E84824;
   --high: #F28C28;
-  --medium: #DCA029;
-  --low: #168A45;
+  --medium: #168A45; /* Normal/positive states = green */
+  --low: #6B7280; /* Neutral = gray */
   
   --radius-sm: 6px;
   --radius-md: 8px;
