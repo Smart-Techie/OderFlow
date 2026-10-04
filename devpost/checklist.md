@@ -39,7 +39,7 @@ Build mode: fast
   Learner check: Open the critical order (#1042) and click "Accept Order." Confirm that the dashboard updates, the critical order drops in priority, and the next most important order rises to the top.
   Commit: `Implement status workflow and dashboard counts`
 
-- [ ] **4. The "Simulate New Order" Demo Trigger**
+- [x] **4. The "Simulate New Order" Demo Trigger**
   Becomes usable: The seller can trigger a new incoming order to watch how OrderFlow catches it and flags it for attention.
   Why now: Completes the required 60-second happy-path demo flow described in the PRD.
   PRD ref: `prd.md > The Happy-Path Demo Flow (60 Seconds)`
@@ -51,23 +51,23 @@ Build mode: fast
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — End of Slice 2 (Order selection visible)
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Early usable behavior explored — End of Slice 2 (Order selection visible)
+- [x] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — brief evidence-based recap (focused alternative)
+- [x] Optional edit and transfer reflection addressed — declined/not applicable (completed without extra exercise)
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: 
-Route and stops: 
-Edit outcome: 
-Reflection: 
-Activity mode: 
+Activity and evidence: Used a brief evidence-based recap connecting the implementation of `orders.js` to the architectural principle of dependency inversion (data seams).
+Route and stops: Reference-only route mapped in `app-map.html` tracing a button click from UI -> app.js -> priority engine -> UI render.
+Edit outcome: Not applicable (focused alternative recap chosen).
+Reflection: Already covered (user verified success and wanted to proceed).
+Activity mode: brief recap
 
 ## Revisions
